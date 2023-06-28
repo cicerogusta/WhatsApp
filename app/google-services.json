@@ -1,0 +1,122 @@
+{
+  "project_info": {
+    "project_number": "88049031977",
+    "firebase_url": "https://whatsapp-clone-888da-default-rtdb.firebaseio.com",
+    "project_id": "whatsapp-clone-888da",
+    "storage_bucket": "whatsapp-clone-888da.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:88049031977:android:f17cf02fd7808119227538",
+        "android_client_info": {
+          "package_name": "com.cicerodev.whatsapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "88049031977-1904b6fa7kcpvhccc8bo8ir4apeuvi21.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cicerodev.whatsapp",
+            "certificate_hash": "3cf509fd1d3516b785b14f17f802e90908ca9819"
+          }
+        },
+        {
+          "client_id": "88049031977-lf00ubad8n7tt61htmpggs3duc556hu5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWFuhIue_1k_jbdcBfY2LC71f_UO8xbp4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "88049031977-lf00ubad8n7tt61htmpggs3duc556hu5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:88049031977:android:852d3e156ca6c083227538",
+        "android_client_info": {
+          "package_name": "com.cicerodev.whatsapp2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "88049031977-vr418lmhvhp33t2eii9f945tfcgcph64.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cicerodev.whatsapp2",
+            "certificate_hash": "3cf509fd1d3516b785b14f17f802e90908ca9819"
+          }
+        },
+        {
+          "client_id": "88049031977-lf00ubad8n7tt61htmpggs3duc556hu5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWFuhIue_1k_jbdcBfY2LC71f_UO8xbp4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "88049031977-lf00ubad8n7tt61htmpggs3duc556hu5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:88049031977:android:d3aaae6a4b40c5ce227538",
+        "android_client_info": {
+          "package_name": "com.cicerodev.whattsjamiltoncompleto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "88049031977-i2laf737dlqk6ipdvsn9vr16jbe5bb12.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cicerodev.whattsjamiltoncompleto",
+            "certificate_hash": "3cf509fd1d3516b785b14f17f802e90908ca9819"
+          }
+        },
+        {
+          "client_id": "88049031977-lf00ubad8n7tt61htmpggs3duc556hu5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWFuhIue_1k_jbdcBfY2LC71f_UO8xbp4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "88049031977-lf00ubad8n7tt61htmpggs3duc556hu5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
