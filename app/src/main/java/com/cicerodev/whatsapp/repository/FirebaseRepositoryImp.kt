@@ -17,7 +17,7 @@ import com.google.firebase.database.ValueEventListener
 
 class FirebaseRepositoryImp() : IFirebaseRepository {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val database = FirebaseDatabase.getInstance()
+    private val database = FirebaseDatabase.getInstance().getReference()
     override fun loginUsuario(usuario: Usuario): LiveData<Result<Any?>> {
         val loginLiveData: MutableLiveData<Result<Any?>> = MutableLiveData()
 
@@ -102,7 +102,7 @@ class FirebaseRepositoryImp() : IFirebaseRepository {
     }
 
     override fun salvarUsuarioFirebase(usuario: Usuario) {
-        usuario.id?.let { database.getReference("usuarios").child(it).setValue(usuario) }
+        usuario.id?.let { database.child("usuarios").child(it).setValue(usuario) }
     }
 
     override fun getIdentificadorUsuario(): String {
@@ -110,9 +110,9 @@ class FirebaseRepositoryImp() : IFirebaseRepository {
     }
 
     override fun recuperarContatos(): MutableLiveData<MutableList<Usuario>> {
-       val listaContatos = mutableListOf<Usuario>()
+        val listaContatos = mutableListOf<Usuario>()
         val listaContatosLiveData: MutableLiveData<MutableList<Usuario>> = MutableLiveData()
-        val usuariosRef = database.getReference("usuarios")
+        val usuariosRef = database.child("usuarios")
         usuariosRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (dados in dataSnapshot.children) {
@@ -127,7 +127,7 @@ class FirebaseRepositoryImp() : IFirebaseRepository {
                 itemGrupo.nome = "Novo grupo"
                 itemGrupo.email = ""
                 listaContatos.add(itemGrupo)
-                listaContatos.reverse()
+//                listaContatos.reverse()
 
             }
 
@@ -142,20 +142,25 @@ class FirebaseRepositoryImp() : IFirebaseRepository {
     }
 
     override fun salvarMensagem(idRemetente: String, idDestinatario: String, msg: Mensagem) {
-        database.getReference("mensagens").child(idRemetente).child(idDestinatario).setValue(msg)
+        database.child("mensagens").child(idRemetente).child(idDestinatario).push().setValue(msg)
     }
 
-    override fun recuperarMensagens(idRemetente: String, idDestinatario: String): MutableLiveData<MutableList<Mensagem>> {
+    override fun recuperarMensagens(
+        idRemetente: String,
+        idDestinatario: String
+    ): MutableLiveData<MutableList<Mensagem>> {
         val listaMensagens = mutableListOf<Mensagem>()
         val mtbListaMensagens: MutableLiveData<MutableList<Mensagem>> = MutableLiveData()
-        val mensagensRef =  database.getReference("mensagens").child(idRemetente).child(idDestinatario)
-        mensagensRef.addChildEventListener(object :ChildEventListener {
+        val mensagensRef = database.child("mensagens").child(idRemetente).child(idDestinatario)
+        mensagensRef.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val mensagem = snapshot.getValue(Mensagem::class.java)
                 if (mensagem != null) {
                     listaMensagens.add(mensagem)
+                    mtbListaMensagens.value = listaMensagens
+
                 }
-                mtbListaMensagens.value = listaMensagens
+
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
@@ -175,6 +180,6 @@ class FirebaseRepositoryImp() : IFirebaseRepository {
             }
 
         })
-        return  mtbListaMensagens
+        return mtbListaMensagens
     }
 }
