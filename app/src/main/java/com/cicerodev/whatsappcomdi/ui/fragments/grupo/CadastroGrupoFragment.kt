@@ -65,7 +65,6 @@ class CadastroGrupoFragment : BaseFragment<FragmentCadastroGrupoBinding, Cadastr
             val grupo = Grupo()
             grupo.membros = listaMembrosSelecionados
             grupo.nome = nomeGrupo
-            toast(viewModel.retornaUsuarioAtual().senha)
             viewModel.salvarGrupo(grupo)
 
 
