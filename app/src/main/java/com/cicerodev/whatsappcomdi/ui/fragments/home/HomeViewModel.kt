@@ -1,4 +1,4 @@
-package com.ciceropinheiro.whatsapp_clone.ui.fragments.home
+package com.cicerodev.whatsappcomdi.ui.fragments.home
 
 import androidx.lifecycle.ViewModel
 import com.cicerodev.whatsappcomdi.data.repository.FirebaseRepository

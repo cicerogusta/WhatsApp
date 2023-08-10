@@ -4,6 +4,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
+import com.cicerodev.whatsappcomdi.adapter.ContatosAdapter
+import com.cicerodev.whatsappcomdi.data.model.Conversa
+import com.cicerodev.whatsappcomdi.data.model.Grupo
 import com.cicerodev.whatsappcomdi.data.model.Mensagem
 import com.cicerodev.whatsappcomdi.data.model.User
 import com.ciceropinheiro.whatsapp_clone.util.UiState
@@ -17,11 +20,20 @@ interface FirebaseRepository {
     fun getAllUsers(
         liveData: MutableLiveData<MutableList<User>>
     )
+    fun saveGroup(grupo: Grupo)
+    fun recuperarContatosGrupo(
+        listaMembros: MutableList<User>,
+        adapter: ContatosAdapter
+    )
+    fun returnCurrentUser() : User
     fun isCurrentUser() : Boolean
     fun saveUserImageGalery(imagem: Uri, context: Context)
+    fun saveGroupImageGalery(imagem: Uri, context: Context)
     fun getUserId(): String?
     fun sentMessage(idRemetente: String, idDestinatario: String, msg: Mensagem)
     fun getMessage(idRemetente: String, idDestinatario: String,livedata:MutableLiveData<MutableList<Mensagem>>)
+    fun saveConversa(conversa: Conversa?)
+    fun getConversas(mutableLiveData: MutableLiveData<MutableList<Conversa>>)
 
 
     fun updateProfile(url: Uri): Boolean

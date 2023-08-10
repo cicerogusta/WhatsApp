@@ -62,5 +62,17 @@
     <fragment
         android:id="@+id/grupoFragment"
         android:name="com.cicerodev.whatsappcomdi.ui.fragments.grupo.GrupoFragment"
-        android:label="GrupoFragment" />
+        android:label="GrupoFragment" >
+        <action
+            android:id="@+id/action_grupoFragment_to_cadastroGrupoFragment2"
+            app:destination="@id/cadastroGrupoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cadastroGrupoFragment"
+        android:name="com.cicerodev.whatsappcomdi.ui.fragments.grupo.CadastroGrupoFragment"
+        android:label="CadastroGrupoFragment" >
+        <argument
+            android:name="listaMembosSelecionados"
+            app:argType="com.cicerodev.whatsappcomdi.data.model.MutableListType" />
+    </fragment>
 </navigation>

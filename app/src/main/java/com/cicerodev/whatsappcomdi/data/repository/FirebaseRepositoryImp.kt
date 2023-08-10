@@ -6,6 +6,9 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
+import com.cicerodev.whatsappcomdi.adapter.ContatosAdapter
+import com.cicerodev.whatsappcomdi.data.model.Conversa
+import com.cicerodev.whatsappcomdi.data.model.Grupo
 import com.cicerodev.whatsappcomdi.data.model.Mensagem
 import com.cicerodev.whatsappcomdi.data.model.User
 import com.ciceropinheiro.whatsapp_clone.util.UiState
@@ -22,7 +25,41 @@ class FirebaseRepositoryImp(
     private val database: FirebaseDatabase,
     private val storage: FirebaseStorage
 ) : FirebaseRepository {
+    override fun recuperarContatosGrupo(
+        listaMembros: MutableList<User>,
+        adapter: ContatosAdapter
+    ) {
+        val usuariosRef = database.reference.child("usuarios")
+        usuariosRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (dados in dataSnapshot.children) {
+                    val usuario = dados.getValue(User::class.java)
+                    val emailUsuarioAtual = auth.currentUser?.email
+                    if (usuario != null) {
+                        if (emailUsuarioAtual != usuario.email) {
+                            listaMembros.add(usuario)
+                        }
+                    }
+                }
+                adapter.notifyDataSetChanged()
+            }
 
+            override fun onCancelled(databaseError: DatabaseError) {}
+        })
+    }
+
+    override fun returnCurrentUser(): User {
+        val firebaseUser = auth.currentUser
+        val usuario = User()
+        usuario.email = firebaseUser!!.email.toString()
+        usuario.nome = firebaseUser.displayName.toString()
+        if (firebaseUser.photoUrl == null) {
+            usuario.foto = ""
+        } else {
+            usuario.foto = firebaseUser.photoUrl.toString()
+        }
+        return usuario
+    }
 
     override fun loginUser(
         email: String,
@@ -118,6 +155,23 @@ class FirebaseRepositoryImp(
         })
     }
 
+    override fun saveGroup(grupo: Grupo) {
+        grupo.id = database.reference.child("grupos").push().key.toString()
+        database.reference.child("grupos").child(grupo.id).setValue(grupo)
+        for (membro in grupo.membros) {
+            val idRemetente = codificarBase64(membro.email)
+            val idDestinatario = grupo.id
+            val conversa = Conversa()
+            conversa.idRemetente = idRemetente
+            conversa.idDestinatario = idDestinatario
+            conversa.ultimaMensagem = ""
+            conversa.isGroup = ("true")
+            conversa.grupo = grupo
+            saveConversa(conversa)
+
+        }
+    }
+
     override fun isCurrentUser(): Boolean {
         var isCurrentUser = false
         val firebaseUser = auth.currentUser
@@ -132,6 +186,28 @@ class FirebaseRepositoryImp(
         val storageReference =
             storage.reference.child("imagens")
                 .child("perfil")
+                .child(getUserId()!! + ".jpeg")
+
+
+        val uploadTask = storageReference.putFile(imagem)
+        uploadTask.addOnFailureListener {
+            Toast.makeText(context, "ERRO: $it", Toast.LENGTH_SHORT).show()
+
+        }.addOnSuccessListener {
+            storageReference.downloadUrl.addOnCompleteListener {
+                updateProfile(it.result)
+                Toast.makeText(context, "IMAGEM INSERIDA COM SUCESSO", Toast.LENGTH_SHORT).show()
+
+
+            }
+        }
+
+    }
+
+    override fun saveGroupImageGalery(imagem: Uri, context: Context) {
+        val storageReference =
+            storage.reference.child("imagens")
+                .child("grupo")
                 .child(getUserId()!! + ".jpeg")
 
 
@@ -214,18 +290,59 @@ class FirebaseRepositoryImp(
             })
     }
 
+    override fun saveConversa(conversa: Conversa?) {
+        if (conversa != null) {
+            database.reference.child("conversas").child(conversa.idRemetente)
+                .child(conversa.idDestinatario).setValue(conversa)
+        }
+
+    }
+
+    override fun getConversas(mutableLiveData: MutableLiveData<MutableList<Conversa>>) {
+        database.reference.child("conversas").child(getUserId()!!).addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val listaConversas = mutableListOf<Conversa>()
+                listaConversas.clear()
+                val conversa = snapshot.getValue(Conversa::class.java)
+                if (conversa != null) {
+                    listaConversas.add(conversa)
+                    mutableLiveData.postValue(listaConversas)
+
+                }
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
+
     override fun getUserProfilePhoto(context: Context): Uri? {
 
         storage.reference.child("imagens").child("perfil")
             .child(getUserId()!! + ".jpeg").downloadUrl.addOnSuccessListener {
-            updateProfile(it)
-            Toast.makeText(context, "SUCESSO AO RECUPERAR IMAGEM", Toast.LENGTH_SHORT).show()
-            Toast.makeText(context, "${auth.currentUser?.displayName}", Toast.LENGTH_SHORT).show()
+                updateProfile(it)
+                Toast.makeText(context, "SUCESSO AO RECUPERAR IMAGEM", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "${auth.currentUser?.displayName}", Toast.LENGTH_SHORT)
+                    .show()
 
 
-        }.addOnFailureListener {
-            Toast.makeText(context, "ERRO :$it", Toast.LENGTH_SHORT).show()
-        }
+            }.addOnFailureListener {
+                Toast.makeText(context, "ERRO :$it", Toast.LENGTH_SHORT).show()
+            }
         return auth.currentUser?.photoUrl
 
     }

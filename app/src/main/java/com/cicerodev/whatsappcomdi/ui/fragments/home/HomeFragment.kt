@@ -6,16 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
 import com.cicerodev.whatsappcomdi.R
 import com.cicerodev.whatsappcomdi.adapter.TabViewPagerAdapter
 import com.cicerodev.whatsappcomdi.databinding.FragmentHomeBinding
 import com.cicerodev.whatsappcomdi.extensions.navigateTo
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
-import com.ciceropinheiro.whatsapp_clone.ui.fragments.home.HomeViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>() {
