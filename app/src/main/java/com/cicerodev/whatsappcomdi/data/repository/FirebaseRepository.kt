@@ -32,7 +32,7 @@ interface FirebaseRepository {
     fun getUserId(): String?
     fun sentMessage(idRemetente: String, idDestinatario: String, msg: Mensagem)
     fun getMessage(idRemetente: String, idDestinatario: String,livedata:MutableLiveData<MutableList<Mensagem>>)
-    fun saveConversa(conversa: Conversa?)
+    fun saveConversa(idRemetente: String?, idDestinatario: String?, conversaRemetente: Conversa)
     fun getConversas(mutableLiveData: MutableLiveData<MutableList<Conversa>>)
 
 

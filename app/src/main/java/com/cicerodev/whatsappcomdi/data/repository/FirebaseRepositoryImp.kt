@@ -98,6 +98,7 @@ class FirebaseRepositoryImp(
     override fun registerUser(user: User, result: (UiState<String>) -> Unit) {
         auth.createUserWithEmailAndPassword(user.email, user.senha).addOnCompleteListener {
             if (it.isSuccessful) {
+                atualizarNomeUsuario(user.nome)
                 database.reference.child("usuarios").child(getUserId()!!).setValue(user)
                 result.invoke(UiState.Success("Registrado com Sucesso"))
             }
@@ -107,6 +108,24 @@ class FirebaseRepositoryImp(
         }
 
 
+    }
+
+    fun atualizarNomeUsuario(nome: String?): Boolean {
+        return try {
+            val user = auth.currentUser
+            val profile = UserProfileChangeRequest.Builder()
+                .setDisplayName(nome)
+                .build()
+            user!!.updateProfile(profile).addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.d("Perfil", "Erro ao atualizar nome de perfil.")
+                }
+            }
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 
     override fun getUserProfileInDatabase(liveData: MutableLiveData<User>) {
@@ -167,7 +186,7 @@ class FirebaseRepositoryImp(
             conversa.ultimaMensagem = ""
             conversa.isGroup = ("true")
             conversa.grupo = grupo
-            saveConversa(conversa)
+            saveConversa(conversa.idRemetente, conversa.idDestinatario, conversa)
 
         }
     }
@@ -290,24 +309,27 @@ class FirebaseRepositoryImp(
             })
     }
 
-    override fun saveConversa(conversa: Conversa?) {
-        if (conversa != null) {
-            database.reference.child("conversas").child(conversa.idRemetente)
-                .child(conversa.idDestinatario).setValue(conversa)
+    override fun saveConversa(idRemetente: String?, idDestinatario: String?, conversaRemetente: Conversa) {
+        val conversaRef = database.reference.child("conversas")
+        if (idRemetente!=null) {
+            if (idDestinatario!=null) {
+                conversaRef.child(idRemetente)
+                    .child(idDestinatario)
+                    .setValue(conversaRemetente)
+            }
         }
 
     }
 
     override fun getConversas(mutableLiveData: MutableLiveData<MutableList<Conversa>>) {
+        val listaConversas = mutableListOf<Conversa>()
+
         database.reference.child("conversas").child(getUserId()!!).addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val listaConversas = mutableListOf<Conversa>()
-                listaConversas.clear()
                 val conversa = snapshot.getValue(Conversa::class.java)
                 if (conversa != null) {
                     listaConversas.add(conversa)
                     mutableLiveData.postValue(listaConversas)
-
                 }
             }
 
@@ -326,7 +348,6 @@ class FirebaseRepositoryImp(
             override fun onCancelled(error: DatabaseError) {
                 TODO("Not yet implemented")
             }
-
         })
     }
 

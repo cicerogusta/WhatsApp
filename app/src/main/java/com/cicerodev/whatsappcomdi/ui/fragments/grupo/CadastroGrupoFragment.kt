@@ -18,6 +18,7 @@ import com.cicerodev.whatsappcomdi.data.model.Grupo
 import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.databinding.FragmentCadastroGrupoBinding
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
+import com.cicerodev.whatsappcomdi.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -64,6 +65,7 @@ class CadastroGrupoFragment : BaseFragment<FragmentCadastroGrupoBinding, Cadastr
             val grupo = Grupo()
             grupo.membros = listaMembrosSelecionados
             grupo.nome = nomeGrupo
+            toast(viewModel.retornaUsuarioAtual().senha)
             viewModel.salvarGrupo(grupo)
 
 
