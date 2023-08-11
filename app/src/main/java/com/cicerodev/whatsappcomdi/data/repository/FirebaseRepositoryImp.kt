@@ -324,32 +324,37 @@ class FirebaseRepositoryImp(
     override fun getConversas(mutableLiveData: MutableLiveData<MutableList<Conversa>>) {
         val listaConversas = mutableListOf<Conversa>()
 
-        database.reference.child("conversas").child(getUserId()!!).addChildEventListener(object : ChildEventListener {
+        val conversasRef = database.reference.child("conversas").child(getUserId()!!)
+
+        val childEventListener = object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val conversa = snapshot.getValue(Conversa::class.java)
-                if (conversa != null) {
+                conversa?.let {
                     listaConversas.add(conversa)
-                    mutableLiveData.postValue(listaConversas)
+                    mutableLiveData.postValue(listaConversas.toMutableList())
                 }
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-
+                // Handle child changed if needed
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-
+                // Handle child removed if needed
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-
+                // Handle child moved if needed
             }
 
             override fun onCancelled(error: DatabaseError) {
-
+                // Handle errors if needed
             }
-        })
+        }
+
+        conversasRef.addChildEventListener(childEventListener)
     }
+
 
     override fun getUserProfilePhoto(context: Context): Uri? {
 

@@ -50,10 +50,15 @@
         android:label="ChatFragment" >
         <argument
             android:name="user"
-            app:argType="com.cicerodev.whatsappcomdi.data.model.User" />
+            app:argType="com.cicerodev.whatsappcomdi.data.model.User"
+            app:nullable="true" />
         <argument
             android:name="tipoChat"
             app:argType="string" />
+        <argument
+            android:name="grupo"
+            app:argType="com.cicerodev.whatsappcomdi.data.model.Grupo"
+            app:nullable="true" />
     </fragment>
     <activity
         android:id="@+id/configuracoesActivity"
@@ -74,5 +79,8 @@
         <argument
             android:name="listaMembosSelecionados"
             app:argType="com.cicerodev.whatsappcomdi.data.model.MutableListType" />
+        <action
+            android:id="@+id/action_cadastroGrupoFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
     </fragment>
 </navigation>

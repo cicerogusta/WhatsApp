@@ -6,28 +6,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cicerodev.whatsappcomdi.R
 import com.cicerodev.whatsappcomdi.adapter.MensagensAdapter
 import com.cicerodev.whatsappcomdi.data.model.Mensagem
+import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.databinding.FragmentChatBinding
-import com.cicerodev.whatsappcomdi.ui.activity.MainActivity
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
 import com.ciceropinheiro.whatsapp_clone.util.codificarBase64
 
 
 class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() {
+    private lateinit var usuarioDestinatario: User
     override val viewModel: ChatFragmentViewModel by hiltNavGraphViewModels(R.id.nav_graph)
     private val args: ChatFragmentArgs by navArgs()
     private var listaMensagens = mutableListOf<Mensagem>()
+    private lateinit var idUsuarioDestinatario: String
 
     override fun getViewBinding(
         inflater: LayoutInflater,
@@ -37,18 +34,21 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val toolbar = binding.toolbar
-        val activity = requireActivity() as AppCompatActivity
-        activity.setSupportActionBar(toolbar)
-        activity.supportActionBar?.title = ""
-        activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.toolbar.setNavigationOnClickListener {
-            activity.onBackPressed()
+        toolbar.title = ""
+        val appCompatActivity = (activity as AppCompatActivity?)!!
+        appCompatActivity.setSupportActionBar(toolbar)
+        appCompatActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toolbar.setNavigationOnClickListener {
+            activity?.onBackPressed()
         }
 
-        viewModel.retornaMensagem(
-            viewModel.retornaIdRemetente()!!,
-            codificarBase64(args.user.email)
-        )
+
+        args.user?.let { codificarBase64(it.email) }?.let {
+            viewModel.retornaMensagem(
+                viewModel.retornaIdRemetente()!!,
+                it
+            )
+        }
 
         observer()
         recuperaDadosUsuarioDestinatario()
@@ -58,16 +58,20 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
                 val mensagem = Mensagem()
                 mensagem.idUsuario = viewModel.retornaIdRemetente()
                 mensagem.mensagem = binding.content.editMensagem.text.toString()
-                viewModel.enviaMensagem(
-                    viewModel.retornaIdRemetente()!!,
-                    codificarBase64(args.user.email),
-                    mensagem
-                )
-                viewModel.enviaMensagem(
-                    codificarBase64(args.user.email),
-                    viewModel.retornaIdRemetente()!!,
-                    mensagem
-                )
+                args.user?.let { it1 -> codificarBase64(it1.email) }?.let { it2 ->
+                    viewModel.enviaMensagem(
+                        viewModel.retornaIdRemetente()!!,
+                        it2,
+                        mensagem
+                    )
+                }
+                args.user?.let { it1 -> codificarBase64(it1.email) }?.let { it2 ->
+                    viewModel.enviaMensagem(
+                        it2,
+                        viewModel.retornaIdRemetente()!!,
+                        mensagem
+                    )
+                }
                 binding.content.editMensagem.setText("")
 
             }
@@ -77,14 +81,38 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
     }
 
     private fun recuperaDadosUsuarioDestinatario() {
-        binding.user = args.user
-        if (args.user.foto!= null) {
-            val url = Uri.parse(args.user.foto)
-            Glide.with(this)
-                .load(url)
-                .into(binding.circleImageFotoChat)
+        if (args.tipoChat.equals("chatGrupo")) {
+            val grupo = args.grupo
+            if (grupo != null) {
+                idUsuarioDestinatario = grupo.id
+            }
+            if (grupo != null) {
+                binding.textViewNomeChat.setText(grupo.nome)
+            }
+            val foto = grupo?.foto
+            if (!foto.equals("")) {
+                val url = Uri.parse(foto)
+                Glide.with(this).load(url).into(binding.circleImageFotoChat)
+            } else {
+                binding.circleImageFotoChat.setImageResource(R.drawable.padrao)
+            }
         } else {
-            binding.circleImageFotoChat.setImageResource(R.drawable.padrao)
+            usuarioDestinatario = args.user!!
+            binding.textViewNomeChat.setText(usuarioDestinatario.nome)
+            val foto = usuarioDestinatario.foto
+            if (!foto.equals("")) {
+                val url = Uri.parse(usuarioDestinatario.foto)
+                Glide.with(this)
+                    .load(url)
+                    .into(binding.circleImageFotoChat)
+
+            } else {
+                binding.circleImageFotoChat.setImageResource(R.drawable.padrao)
+            }
+
+
+            //recuperar dados usuario destinatario
+            idUsuarioDestinatario = codificarBase64(usuarioDestinatario.email)
         }
     }
 

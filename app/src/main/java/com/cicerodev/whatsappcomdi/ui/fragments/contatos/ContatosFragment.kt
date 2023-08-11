@@ -54,7 +54,7 @@ class ContatosFragment : BaseFragment<FragmentContatosBinding, ContatosViewModel
                     navigateTo(HomeFragmentDirections.actionHomeFragmentToGrupoFragment())
                 } else {
                    val tipoChat = "chatContato"
-                    navigateTo(HomeFragmentDirections.actionHomeFragmentToChatFragment(it[position], tipoChat))
+                    navigateTo(HomeFragmentDirections.actionHomeFragmentToChatFragment(it[position], tipoChat, null))
 
                 }
 

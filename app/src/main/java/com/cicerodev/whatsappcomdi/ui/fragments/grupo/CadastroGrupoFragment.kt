@@ -17,6 +17,7 @@ import com.cicerodev.whatsappcomdi.adapter.GrupoSelecionadoAdapter
 import com.cicerodev.whatsappcomdi.data.model.Grupo
 import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.databinding.FragmentCadastroGrupoBinding
+import com.cicerodev.whatsappcomdi.extensions.navigateTo
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
 import com.cicerodev.whatsappcomdi.util.toast
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,6 +67,8 @@ class CadastroGrupoFragment : BaseFragment<FragmentCadastroGrupoBinding, Cadastr
             grupo.membros = listaMembrosSelecionados
             grupo.nome = nomeGrupo
             viewModel.salvarGrupo(grupo)
+            val tipoChat = "chatGrupo"
+            navigateTo(CadastroGrupoFragmentDirections.actionCadastroGrupoFragmentToChatFragment(null, tipoChat, grupo))
 
 
         }
