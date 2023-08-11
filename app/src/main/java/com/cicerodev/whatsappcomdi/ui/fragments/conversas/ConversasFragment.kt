@@ -13,7 +13,9 @@ import com.cicerodev.whatsappcomdi.R
 import com.cicerodev.whatsappcomdi.adapter.ConversasAdapter
 import com.cicerodev.whatsappcomdi.adapter.RecyclerItemClickListener
 import com.cicerodev.whatsappcomdi.databinding.FragmentConversasBinding
+import com.cicerodev.whatsappcomdi.extensions.navigateTo
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
+import com.cicerodev.whatsappcomdi.ui.fragments.home.HomeFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -55,9 +57,10 @@ class ConversasFragment : BaseFragment<FragmentConversasBinding, ConversasViewMo
                             val conversaSelecionada = listaConversasAtualizada[position]
                             if (!conversaSelecionada.equals(null)) {
                                 if (conversaSelecionada.isGroup == "true") {
+                                    navigateTo(HomeFragmentDirections.actionHomeFragmentToChatFragment(null, "chatGrupo", conversaSelecionada.grupo))
 
                                 } else {
-
+                                    navigateTo(HomeFragmentDirections.actionHomeFragmentToChatFragment(conversaSelecionada.usuarioExibicao, "chatContato", null))
                                 }
                             }
                         }
