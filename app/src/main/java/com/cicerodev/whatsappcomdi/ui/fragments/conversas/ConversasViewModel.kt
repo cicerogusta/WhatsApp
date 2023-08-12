@@ -3,6 +3,9 @@ package com.cicerodev.whatsappcomdi.ui.fragments.conversas
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.cicerodev.whatsappcomdi.data.model.Conversa
+import com.cicerodev.whatsappcomdi.data.model.Grupo
+import com.cicerodev.whatsappcomdi.data.model.Mensagem
+import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.data.repository.FirebaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -17,5 +20,16 @@ class ConversasViewModel @Inject constructor(private val repository: FirebaseRep
 
     fun getConversas() {
         repository.getConversas(_conversas)
+    }
+
+    fun salvarConversa(
+        idRemetente: String,
+        idDestinatario: String,
+        usuarioExibicao: User,
+        mensagem: Mensagem,
+        isGroup: Boolean,
+        grupo: Grupo
+    ) {
+        repository.saveConversa(idRemetente, idDestinatario, usuarioExibicao, mensagem, isGroup, grupo)
     }
 }

@@ -2,7 +2,9 @@ package com.cicerodev.whatsappcomdi.ui.fragments.chat
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.cicerodev.whatsappcomdi.data.model.Grupo
 import com.cicerodev.whatsappcomdi.data.model.Mensagem
+import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.data.repository.FirebaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -22,5 +24,22 @@ class ChatFragmentViewModel @Inject constructor(private val repository: Firebase
     }
     fun retornaMensagem(idRemetente: String, idDestinatario: String) {
         repository.getMessage(idRemetente, idDestinatario, _mensagens)
+    }
+
+    fun retornaUsuarioLogado() = repository.returnCurrentUser()
+
+    fun salvaConversa(
+        idRemetente: String,
+        idDestinatario: String,
+        usuarioExibicao: User,
+        mensagem: Mensagem,
+        isGroup: Boolean,
+        grupo: Grupo?
+    ) {
+        if (grupo != null) {
+            repository.saveConversa(idRemetente, idDestinatario, usuarioExibicao, mensagem, isGroup, grupo)
+        } else {
+            repository.saveConversa(idRemetente, idDestinatario, usuarioExibicao, mensagem, isGroup, null)
+        }
     }
 }

@@ -43,7 +43,7 @@ class ConversasAdapter(val conversas: MutableList<Conversa>, private val context
                 val usuario = conversa.usuarioExibicao
                 if (!usuario.equals(null)) {
                     holder.nome.text = usuario.nome
-                    if (usuario.foto != null) {
+                    if (!usuario.foto.equals("")) {
                         val uri = Uri.parse(usuario.foto)
                         Glide.with(context).load(uri).into(holder.foto)
                     } else {

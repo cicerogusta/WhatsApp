@@ -174,6 +174,34 @@ class FirebaseRepositoryImp(
         })
     }
 
+    override fun saveConversa(
+        idRemetente: String,
+        idDestinatario: String,
+        usuarioExibicao: User,
+        mensagem: Mensagem,
+        isGroup: Boolean,
+        grupo: Grupo?
+    ) {
+        val conversaRemetente = Conversa()
+        conversaRemetente.idRemetente = idRemetente
+        conversaRemetente.idDestinatario = idDestinatario
+        conversaRemetente.ultimaMensagem = mensagem.mensagem.toString()
+
+        if (isGroup) {
+            conversaRemetente.isGroup = "true"
+            if (grupo != null) {
+                conversaRemetente.grupo = grupo
+            }
+
+        } else {
+            conversaRemetente.usuarioExibicao = usuarioExibicao
+            conversaRemetente.isGroup = "false"
+        }
+
+        database.reference.child("conversas").child(conversaRemetente.idRemetente)
+            .child(conversaRemetente.idDestinatario).setValue(conversaRemetente)
+    }
+
     override fun saveGroup(grupo: Grupo) {
         grupo.id = database.reference.child("grupos").push().key.toString()
         database.reference.child("grupos").child(grupo.id).setValue(grupo)
@@ -186,7 +214,7 @@ class FirebaseRepositoryImp(
             conversa.ultimaMensagem = ""
             conversa.isGroup = ("true")
             conversa.grupo = grupo
-            saveConversa(conversa.idRemetente, conversa.idDestinatario, conversa)
+            saveConversaGrupo(conversa.idRemetente, conversa.idDestinatario, conversa)
 
         }
     }
@@ -285,34 +313,39 @@ class FirebaseRepositoryImp(
         idDestinatario: String,
         livedata: MutableLiveData<MutableList<Mensagem>>
     ) {
-        database.reference.child("mensagens").child(idRemetente).child(idDestinatario)
-            .addChildEventListener(object : ChildEventListener {
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    val mensagem = snapshot.getValue(Mensagem::class.java)
-                    val listaMensagem = mutableListOf<Mensagem>()
-                    if (mensagem != null) {
-                        listaMensagem.add(mensagem)
-                        livedata.value = listaMensagem
-                    }
+        val listaMensagem = mutableListOf<Mensagem>()
+        val mensagemRef =
+            database.reference.child("mensagens").child(idRemetente).child(idDestinatario)
 
-
+        val childEventListener = object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                listaMensagem.clear()
+                val mensagem = snapshot.getValue(Mensagem::class.java)
+                mensagem?.let {
+                    listaMensagem.add(it)
+                    livedata.value = listaMensagem.toMutableList()
                 }
+            }
 
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+            override fun onCancelled(error: DatabaseError) {}
+        }
 
-                override fun onChildRemoved(snapshot: DataSnapshot) {}
-
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-
-                override fun onCancelled(error: DatabaseError) {}
-
-            })
+        mensagemRef.removeEventListener(childEventListener)
+        mensagemRef.addChildEventListener(childEventListener)
     }
 
-    override fun saveConversa(idRemetente: String?, idDestinatario: String?, conversaRemetente: Conversa) {
+
+    override fun saveConversaGrupo(
+        idRemetente: String?,
+        idDestinatario: String?,
+        conversaRemetente: Conversa
+    ) {
         val conversaRef = database.reference.child("conversas")
-        if (idRemetente!=null) {
-            if (idDestinatario!=null) {
+        if (idRemetente != null) {
+            if (idDestinatario != null) {
                 conversaRef.child(idRemetente)
                     .child(idDestinatario)
                     .setValue(conversaRemetente)

@@ -20,7 +20,8 @@ import com.ciceropinheiro.whatsapp_clone.util.codificarBase64
 
 
 class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() {
-    private lateinit var usuarioDestinatario: User
+    private var idUsuarioRemetente: String? = null
+    private var usuarioDestinatario: User? = null
     override val viewModel: ChatFragmentViewModel by hiltNavGraphViewModels(R.id.nav_graph)
     private val args: ChatFragmentArgs by navArgs()
     private var listaMensagens = mutableListOf<Mensagem>()
@@ -42,42 +43,74 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
             activity?.onBackPressed()
         }
 
+        idUsuarioRemetente = viewModel.retornaIdRemetente()
 
-        args.user?.let { codificarBase64(it.email) }?.let {
-            viewModel.retornaMensagem(
-                viewModel.retornaIdRemetente()!!,
-                it
-            )
-        }
-
+        viewModel.mensagens.value?.clear()
         observer()
         recuperaDadosUsuarioDestinatario()
 
         binding.content.fabEnviar.setOnClickListener {
-            if (binding.content.editMensagem.text.toString().isNotEmpty()) {
-                val mensagem = Mensagem()
-                mensagem.idUsuario = viewModel.retornaIdRemetente()
-                mensagem.mensagem = binding.content.editMensagem.text.toString()
-                args.user?.let { it1 -> codificarBase64(it1.email) }?.let { it2 ->
-                    viewModel.enviaMensagem(
-                        viewModel.retornaIdRemetente()!!,
-                        it2,
-                        mensagem
-                    )
-                }
-                args.user?.let { it1 -> codificarBase64(it1.email) }?.let { it2 ->
-                    viewModel.enviaMensagem(
-                        it2,
-                        viewModel.retornaIdRemetente()!!,
-                        mensagem
-                    )
-                }
-                binding.content.editMensagem.setText("")
-
-            }
+            enviarMensagem()
 
         }
 
+    }
+
+    private fun enviarMensagem() {
+        val textoMensagem = binding.content.editMensagem.text.toString()
+        if (textoMensagem.isNotEmpty()) {
+            if (usuarioDestinatario != null) {
+                val mensagem = Mensagem()
+                mensagem.idUsuario = idUsuarioRemetente
+                mensagem.mensagem = textoMensagem
+
+                viewModel.enviaMensagem(idUsuarioRemetente!!, idUsuarioDestinatario, mensagem)
+                viewModel.enviaMensagem(idUsuarioDestinatario, idUsuarioRemetente!!, mensagem)
+                viewModel.salvaConversa(
+                    idUsuarioRemetente!!,
+                    idUsuarioDestinatario,
+                    usuarioDestinatario!!,
+                    mensagem,
+                    false,
+                    null
+                )
+                viewModel.salvaConversa(
+                    idUsuarioDestinatario,
+                    idUsuarioRemetente!!,
+                    viewModel.retornaUsuarioLogado(),
+                    mensagem,
+                    false,
+                    null
+                )
+
+
+            } else {
+
+                for (membro in args.grupo?.membros!!) {
+                    val idRemetenteGrupo: String = codificarBase64(membro.email)
+                    val idUsuarioLogadoGrupo: String = viewModel.retornaIdRemetente().toString()
+                    val mensagem = Mensagem()
+                    mensagem.idUsuario = (idUsuarioLogadoGrupo)
+                    mensagem.mensagem = (textoMensagem)
+                    mensagem.nome = (viewModel.retornaUsuarioLogado().nome)
+
+                    //salvar mensagem para o membro
+                    viewModel.enviaMensagem(idRemetenteGrupo, idUsuarioDestinatario, mensagem)
+
+                    //Salvar conversa
+                    usuarioDestinatario?.let {
+                        viewModel.salvaConversa(
+                            idRemetenteGrupo,
+                            idUsuarioDestinatario,
+                            it,
+                            mensagem,
+                            true, args.grupo
+                        )
+                    }
+                }
+            }
+
+        }
     }
 
     private fun recuperaDadosUsuarioDestinatario() {
@@ -97,11 +130,11 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
                 binding.circleImageFotoChat.setImageResource(R.drawable.padrao)
             }
         } else {
-            usuarioDestinatario = args.user!!
-            binding.textViewNomeChat.setText(usuarioDestinatario.nome)
-            val foto = usuarioDestinatario.foto
+            usuarioDestinatario = args.user
+            binding.textViewNomeChat.setText(usuarioDestinatario?.nome)
+            val foto = usuarioDestinatario?.foto
             if (!foto.equals("")) {
-                val url = Uri.parse(usuarioDestinatario.foto)
+                val url = Uri.parse(usuarioDestinatario?.foto ?: "")
                 Glide.with(this)
                     .load(url)
                     .into(binding.circleImageFotoChat)
@@ -112,7 +145,7 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
 
             //recuperar dados usuario destinatario
-            idUsuarioDestinatario = codificarBase64(usuarioDestinatario.email)
+            idUsuarioDestinatario = usuarioDestinatario?.email?.let { codificarBase64(it) }.toString()
         }
     }
 
@@ -124,6 +157,7 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
             configuraRecyclerView()
         }
     }
+
 
     private fun configuraRecyclerView() {
         binding.content.recyclerMensagens.apply {
@@ -139,7 +173,13 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
     override fun onStart() {
         super.onStart()
         configuraRecyclerView()
+        viewModel.retornaMensagem(idUsuarioRemetente.toString(), idUsuarioDestinatario)
 
 
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.mensagens.value?.clear()
     }
 }

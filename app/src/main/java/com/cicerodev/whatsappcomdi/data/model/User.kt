@@ -5,7 +5,7 @@ data class User(
     var nome: String = "",
     var email: String = "",
     var senha: String = "",
-    var foto: String? = null
+    var foto: String = ""
 
     ): java.io.Serializable {
 

@@ -45,7 +45,7 @@ class MensagensAdapter(
         val mensagem = listaMensagens[position]
         val msg = mensagem.mensagem
         val imagem = mensagem.imagem
-        if (imagem != null) {
+        if (!imagem.equals("")) {
             val url = Uri.parse(imagem)
             Glide.with(context).load(url).into(holder.imagem)
             val nome = mensagem.nome
@@ -61,7 +61,7 @@ class MensagensAdapter(
             holder.mensagem.visibility = View.GONE
         } else {
             holder.mensagem.text = msg
-            val nome = mensagem?.nome
+            val nome = mensagem.nome
             if (nome != null) {
                 if (!nome.isEmpty()) {
                     holder.nome.text = nome

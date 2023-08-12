@@ -27,7 +27,7 @@ class ContatosAdapter(
         holder.binding.textEmailContato.setText(contato.email)
         holder.binding.textNomeContato.setText(contato.nome)
 
-        if (contato.foto != null) {
+        if (!contato.foto.equals("")) {
             val uri = Uri.parse(contato.foto)
             Glide.with(context).load(uri).into(holder.binding.imageViewFotoContato)
         } else {
