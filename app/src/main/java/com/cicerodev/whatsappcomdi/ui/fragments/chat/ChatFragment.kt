@@ -51,6 +51,7 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
         binding.content.fabEnviar.setOnClickListener {
             enviarMensagem()
+            binding.content.editMensagem.setText("")
 
         }
 
@@ -98,15 +99,13 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
                     viewModel.enviaMensagem(idRemetenteGrupo, idUsuarioDestinatario, mensagem)
 
                     //Salvar conversa
-                    usuarioDestinatario?.let {
                         viewModel.salvaConversa(
                             idRemetenteGrupo,
                             idUsuarioDestinatario,
-                            it,
+                            usuarioDestinatario,
                             mensagem,
                             true, args.grupo
                         )
-                    }
                 }
             }
 

@@ -41,13 +41,15 @@ class ConversasAdapter(val conversas: MutableList<Conversa>, private val context
                 }
             } else {
                 val usuario = conversa.usuarioExibicao
-                if (!usuario.equals(null)) {
-                    holder.nome.text = usuario.nome
-                    if (!usuario.foto.equals("")) {
-                        val uri = Uri.parse(usuario.foto)
-                        Glide.with(context).load(uri).into(holder.foto)
-                    } else {
-                        holder.foto.setImageResource(R.drawable.padrao)
+                if (usuario != null) {
+                    if (!usuario.equals(null)) {
+                        holder.nome.text = usuario.nome
+                        if (!usuario.foto.equals("")) {
+                            val uri = Uri.parse(usuario.foto)
+                            Glide.with(context).load(uri).into(holder.foto)
+                        } else {
+                            holder.foto.setImageResource(R.drawable.padrao)
+                        }
                     }
                 }
             }

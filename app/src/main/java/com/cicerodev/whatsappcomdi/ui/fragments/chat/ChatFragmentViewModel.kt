@@ -31,15 +31,11 @@ class ChatFragmentViewModel @Inject constructor(private val repository: Firebase
     fun salvaConversa(
         idRemetente: String,
         idDestinatario: String,
-        usuarioExibicao: User,
+        usuarioExibicao: User?,
         mensagem: Mensagem,
         isGroup: Boolean,
         grupo: Grupo?
     ) {
-        if (grupo != null) {
             repository.saveConversa(idRemetente, idDestinatario, usuarioExibicao, mensagem, isGroup, grupo)
-        } else {
-            repository.saveConversa(idRemetente, idDestinatario, usuarioExibicao, mensagem, isGroup, null)
-        }
     }
 }

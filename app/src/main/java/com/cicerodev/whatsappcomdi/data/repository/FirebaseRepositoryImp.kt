@@ -177,7 +177,7 @@ class FirebaseRepositoryImp(
     override fun saveConversa(
         idRemetente: String,
         idDestinatario: String,
-        usuarioExibicao: User,
+        usuarioExibicao: User?,
         mensagem: Mensagem,
         isGroup: Boolean,
         grupo: Grupo?
@@ -189,10 +189,7 @@ class FirebaseRepositoryImp(
 
         if (isGroup) {
             conversaRemetente.isGroup = "true"
-            if (grupo != null) {
-                conversaRemetente.grupo = grupo
-            }
-
+            conversaRemetente.grupo = grupo!!
         } else {
             conversaRemetente.usuarioExibicao = usuarioExibicao
             conversaRemetente.isGroup = "false"

@@ -21,15 +21,4 @@ class ConversasViewModel @Inject constructor(private val repository: FirebaseRep
     fun getConversas() {
         repository.getConversas(_conversas)
     }
-
-    fun salvarConversa(
-        idRemetente: String,
-        idDestinatario: String,
-        usuarioExibicao: User,
-        mensagem: Mensagem,
-        isGroup: Boolean,
-        grupo: Grupo
-    ) {
-        repository.saveConversa(idRemetente, idDestinatario, usuarioExibicao, mensagem, isGroup, grupo)
-    }
 }
