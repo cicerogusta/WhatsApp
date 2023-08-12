@@ -9,7 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cicerodev.whatsappcomdi.R
@@ -19,11 +18,11 @@ import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.databinding.FragmentCadastroGrupoBinding
 import com.cicerodev.whatsappcomdi.extensions.navigateTo
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
-import com.cicerodev.whatsappcomdi.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CadastroGrupoFragment : BaseFragment<FragmentCadastroGrupoBinding, CadastroGrupoViewModel>() {
+    private lateinit var grupo: Grupo
     override val viewModel: CadastroGrupoViewModel by viewModels()
     private val listaMembrosSelecionados: MutableList<User> = ArrayList()
     private var grupoSelecionadoAdapter: GrupoSelecionadoAdapter? = null
@@ -31,7 +30,7 @@ class CadastroGrupoFragment : BaseFragment<FragmentCadastroGrupoBinding, Cadastr
     private val gallery =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             if (uri != null) {
-                viewModel.salvarImagemGaleria(requireContext(), uri)
+                viewModel.salvarImagemGrupoGaleria(requireContext(), uri, grupo)
                 binding.content.imageGrupo.setImageURI(uri)
             } else {
                 binding.content.imageGrupo.setImageResource(R.drawable.padrao)
@@ -45,7 +44,7 @@ class CadastroGrupoFragment : BaseFragment<FragmentCadastroGrupoBinding, Cadastr
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        grupo = Grupo()
         val toolbar = binding.toolbar
         val activity = requireActivity() as AppCompatActivity
         activity.setSupportActionBar(toolbar)
@@ -63,7 +62,6 @@ class CadastroGrupoFragment : BaseFragment<FragmentCadastroGrupoBinding, Cadastr
         binding.fabSalvarGrupo.setOnClickListener {
             val nomeGrupo: String = binding.content.editNomeGrupo.getText().toString()
             listaMembrosSelecionados.add(viewModel.retornaUsuarioAtual())
-            val grupo = Grupo()
             grupo.membros = listaMembrosSelecionados
             grupo.nome = nomeGrupo
             viewModel.salvarGrupo(grupo)

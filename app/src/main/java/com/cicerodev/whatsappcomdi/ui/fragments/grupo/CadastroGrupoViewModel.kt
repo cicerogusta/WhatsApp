@@ -14,8 +14,8 @@ class CadastroGrupoViewModel@Inject constructor(
     private val repository: FirebaseRepository
 ) : ViewModel() {
 
-    fun salvarImagemGaleria(context: Context, uri: Uri) {
-        repository.saveUserImageGalery(uri, context)
+    fun salvarImagemGrupoGaleria(context: Context, uri: Uri, grupo: Grupo) {
+        repository.saveGroupImageGalery(uri, context, grupo)
 
     }
 

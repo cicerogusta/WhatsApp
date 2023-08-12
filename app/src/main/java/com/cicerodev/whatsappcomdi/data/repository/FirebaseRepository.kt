@@ -39,7 +39,7 @@ interface FirebaseRepository {
     fun returnCurrentUser(): User
     fun isCurrentUser(): Boolean
     fun saveUserImageGalery(imagem: Uri, context: Context)
-    fun saveGroupImageGalery(imagem: Uri, context: Context)
+    fun saveGroupImageGalery(imagem: Uri, context: Context, grupo: Grupo)
     fun getUserId(): String?
     fun sentMessage(idRemetente: String, idDestinatario: String, msg: Mensagem)
     fun getMessage(

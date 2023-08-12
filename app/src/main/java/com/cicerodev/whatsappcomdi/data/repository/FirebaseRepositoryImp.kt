@@ -251,11 +251,11 @@ class FirebaseRepositoryImp(
 
     }
 
-    override fun saveGroupImageGalery(imagem: Uri, context: Context) {
+    override fun saveGroupImageGalery(imagem: Uri, context: Context, grupo: Grupo) {
         val storageReference =
             storage.reference.child("imagens")
-                .child("grupo")
-                .child(getUserId()!! + ".jpeg")
+                .child("grupos")
+                .child(grupo.id + ".jpeg")
 
 
         val uploadTask = storageReference.putFile(imagem)
@@ -264,7 +264,8 @@ class FirebaseRepositoryImp(
 
         }.addOnSuccessListener {
             storageReference.downloadUrl.addOnCompleteListener {
-                updateProfile(it.result)
+                grupo.foto = it.result.toString()
+
                 Toast.makeText(context, "IMAGEM INSERIDA COM SUCESSO", Toast.LENGTH_SHORT).show()
 
 
