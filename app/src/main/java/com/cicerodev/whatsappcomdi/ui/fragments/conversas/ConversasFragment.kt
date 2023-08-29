@@ -91,13 +91,26 @@ class ConversasFragment : BaseFragment<FragmentConversasBinding, ConversasViewMo
     fun pesquisarConversas(texto: String) {
         val listaConversasBusca = mutableListOf<Conversa>()
         for (conversa in viewModel.conversa.value!!) {
-            val nome = conversa.usuarioExibicao?.nome?.lowercase()
-            val ultimaMsg = conversa.ultimaMensagem.lowercase()
+            if (conversa.usuarioExibicao !=null) {
 
-            if (nome?.contains(texto) == true || ultimaMsg.contains(texto)) {
-               listaConversasBusca.add(conversa)
+                val nome = conversa.usuarioExibicao?.nome?.lowercase()
+                val ultimaMsg = conversa.ultimaMensagem.lowercase()
 
+                if (nome?.contains(texto) == true || ultimaMsg.contains(texto)) {
+                    listaConversasBusca.add(conversa)
+
+                }
+
+            } else {
+                val nome = conversa.grupo.nome.lowercase()
+                val ultimaMsg = conversa.ultimaMensagem.lowercase()
+
+                if (nome.contains(texto) || ultimaMsg.contains(texto)) {
+                    listaConversasBusca.add(conversa)
+
+                }
             }
+
         }
         adapter = ConversasAdapter(listaConversasBusca, requireContext())
         binding.recyclerListaConversas.adapter = adapter

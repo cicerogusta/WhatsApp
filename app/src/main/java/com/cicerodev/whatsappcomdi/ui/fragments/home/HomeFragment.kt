@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.viewpager2.widget.ViewPager2
 import com.cicerodev.whatsappcomdi.R
 import com.cicerodev.whatsappcomdi.adapter.TabViewPagerAdapter
 import com.cicerodev.whatsappcomdi.databinding.FragmentHomeBinding
@@ -23,6 +24,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>() {
         container: ViewGroup?
     ): FragmentHomeBinding = FragmentHomeBinding.inflate(inflater, container, false)
 
+    private lateinit var viewPager: ViewPager2
     private lateinit var adapter: TabViewPagerAdapter
     override val viewModel: HomeViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
@@ -44,31 +46,36 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>() {
         val searchView: SearchView? = searchItem.actionView as SearchView?
         searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                // O SearchView foi expandido (ícone da lupa foi clicado)
                 return true
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                // O SearchView foi retraído (ícone da lupa foi clicado novamente)
-                // Aqui você pode lidar com o comportamento do botão "Voltar"
-                val fragment = adapter.fragments[0] as ConversasFragment
-                fragment.recuperarConversas()
+                when(viewPager.currentItem) {
+
+                    0 -> {
+                        val fragment = adapter.fragments[0] as ConversasFragment
+                        fragment.recuperarConversas()
+                    }
+                }
                 return true
             }
         })
 
         searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                // Aqui você pode lidar com a submissão da consulta de pesquisa
                 return false
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-               val fragment = adapter.fragments[0] as ConversasFragment
-                if (newText.isNotEmpty()) {
-                    fragment.pesquisarConversas(newText.lowercase())
-                } else {
-                    fragment.recuperarConversas()
+                when(viewPager.currentItem) {
+                    0 -> {
+                        val fragment = adapter.fragments[0] as ConversasFragment
+                        if (newText.isNotEmpty()) {
+                            fragment.pesquisarConversas(newText.lowercase())
+                        } else {
+                            fragment.recuperarConversas()
+                        }
+                    }
                 }
                 return true
             }
@@ -90,7 +97,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>() {
 
     private fun setupViews() {
         val tabLayout = binding.viewPagerTab
-        val viewPager = binding.viewPager
+         viewPager = binding.viewPager
          adapter = TabViewPagerAdapter(this)
         viewPager.adapter = adapter
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
