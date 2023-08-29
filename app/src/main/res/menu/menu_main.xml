@@ -4,9 +4,9 @@
 
     <item android:id="@+id/menuPesquisa"
         android:title="Pesquisar"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom|collapseActionView"
         android:icon="@drawable/ic_pesquisa_branco_24dp"
-        />
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
 
     <item android:id="@+id/menuConfiguracoes"
         android:title="Configurações"

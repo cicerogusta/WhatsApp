@@ -12,17 +12,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cicerodev.whatsappcomdi.R
 import com.cicerodev.whatsappcomdi.adapter.ConversasAdapter
 import com.cicerodev.whatsappcomdi.adapter.RecyclerItemClickListener
+import com.cicerodev.whatsappcomdi.data.model.Conversa
 import com.cicerodev.whatsappcomdi.databinding.FragmentConversasBinding
 import com.cicerodev.whatsappcomdi.extensions.navigateTo
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
 import com.cicerodev.whatsappcomdi.ui.fragments.home.HomeFragmentDirections
+import com.cicerodev.whatsappcomdi.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class ConversasFragment : BaseFragment<FragmentConversasBinding, ConversasViewModel>() {
 
+    private lateinit var adapter: ConversasAdapter
     override val viewModel: ConversasViewModel by viewModels()
+    var listaConveras = mutableListOf<Conversa>()
 
     override fun getViewBinding(
         inflater: LayoutInflater,
@@ -36,9 +40,9 @@ class ConversasFragment : BaseFragment<FragmentConversasBinding, ConversasViewMo
     }
 
     private fun configuraRecyclerViewListaConversas() {
-        viewModel.conversa.observe(this) { listaConversas ->
+        viewModel.conversa.observe(viewLifecycleOwner) { listaConversasLiveData ->
             //Configurar adapter
-            val adapter = ConversasAdapter(listaConversas, requireActivity())
+             adapter = ConversasAdapter(listaConversasLiveData, requireActivity())
 
             //Configurar recyclerview
             val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(requireContext())
@@ -82,6 +86,29 @@ class ConversasFragment : BaseFragment<FragmentConversasBinding, ConversasViewMo
                 )
             )
         }
+    }
+
+    fun pesquisarConversas(texto: String) {
+        val listaConversasBusca = mutableListOf<Conversa>()
+        for (conversa in viewModel.conversa.value!!) {
+            val nome = conversa.usuarioExibicao?.nome?.lowercase()
+            val ultimaMsg = conversa.ultimaMensagem.lowercase()
+
+            if (nome?.contains(texto) == true || ultimaMsg.contains(texto)) {
+               listaConversasBusca.add(conversa)
+
+            }
+        }
+        adapter = ConversasAdapter(listaConversasBusca, requireContext())
+        binding.recyclerListaConversas.adapter = adapter
+        adapter.notifyDataSetChanged()
+    }
+
+    fun recuperarConversas() {
+        listaConveras = viewModel.conversa.value!!
+        adapter = ConversasAdapter(listaConveras, requireContext())
+        binding.recyclerListaConversas.adapter = adapter
+        adapter.notifyDataSetChanged()
     }
 
     override fun onStart() {
