@@ -38,14 +38,64 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 if (result?.data != null) {
-                     bitmap = result.data?.extras?.get("data") as Bitmap
-                    val mensagem = Mensagem()
-                    mensagem.idUsuario = idUsuarioRemetente
-                    mensagem.mensagem = "imagem.jpeg"
-                    viewModel.getDownloadUrl(bitmap, idUsuarioRemetente!!).observe(viewLifecycleOwner) { downloadUrl ->
-                        mensagem.imagem = downloadUrl
-                        idUsuarioRemetente?.let { viewModel.enviaMensagem(it, idUsuarioDestinatario, mensagem) }
-                        idUsuarioRemetente?.let { viewModel.enviaMensagem(idUsuarioDestinatario, it, mensagem) }
+                    bitmap = result.data?.extras?.get("data") as Bitmap
+                    if (usuarioDestinatario != null) {
+                        val mensagem = Mensagem()
+                        mensagem.idUsuario = idUsuarioRemetente
+                        mensagem.mensagem = "imagem.jpeg"
+                        viewModel.getDownloadUrl(bitmap, idUsuarioRemetente!!)
+                            .observe(viewLifecycleOwner) { downloadUrl ->
+                                mensagem.imagem = downloadUrl
+                                idUsuarioRemetente?.let {
+                                    viewModel.enviaMensagem(
+                                        it,
+                                        idUsuarioDestinatario,
+                                        mensagem
+                                    )
+                                }
+                                idUsuarioRemetente?.let {
+                                    viewModel.enviaMensagem(
+                                        idUsuarioDestinatario,
+                                        it,
+                                        mensagem
+                                    )
+                                }
+
+
+                            }
+                    } else {
+                        idUsuarioRemetente?.let {
+                            viewModel.getDownloadUrl(bitmap, it)
+                                .observe(viewLifecycleOwner) { downloadUrl ->
+                                    for (membro in args.grupo?.membros!!) {
+                                        idRemetenteGrupo = codificarBase64(membro.email)
+                                        val idUsuarioLogadoGrupo: String =
+                                            viewModel.retornaIdRemetente().toString()
+                                        val mensagem = Mensagem()
+                                        mensagem.idUsuario = (idUsuarioLogadoGrupo)
+                                        mensagem.mensagem = ("imagem.jpeg")
+                                        mensagem.nome = (viewModel.retornaUsuarioLogado().nome)
+                                        mensagem.imagem = downloadUrl
+
+                                        //salvar mensagem para o membro
+                                        viewModel.enviaMensagem(
+                                            idRemetenteGrupo,
+                                            idUsuarioDestinatario,
+                                            mensagem
+                                        )
+
+                                        //Salvar conversa
+                                        viewModel.salvaConversa(
+                                            idRemetenteGrupo,
+                                            idUsuarioDestinatario,
+                                            usuarioDestinatario,
+                                            mensagem,
+                                            true, args.grupo
+                                        )
+                                    }
+                                }
+                        }
+
 
                     }
 
@@ -122,7 +172,7 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
             } else {
 
                 for (membro in args.grupo?.membros!!) {
-                     idRemetenteGrupo = codificarBase64(membro.email)
+                    idRemetenteGrupo = codificarBase64(membro.email)
                     val idUsuarioLogadoGrupo: String = viewModel.retornaIdRemetente().toString()
                     val mensagem = Mensagem()
                     mensagem.idUsuario = (idUsuarioLogadoGrupo)
@@ -133,13 +183,13 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
                     viewModel.enviaMensagem(idRemetenteGrupo, idUsuarioDestinatario, mensagem)
 
                     //Salvar conversa
-                        viewModel.salvaConversa(
-                            idRemetenteGrupo,
-                            idUsuarioDestinatario,
-                            usuarioDestinatario,
-                            mensagem,
-                            true, args.grupo
-                        )
+                    viewModel.salvaConversa(
+                        idRemetenteGrupo,
+                        idUsuarioDestinatario,
+                        usuarioDestinatario,
+                        mensagem,
+                        true, args.grupo
+                    )
                 }
             }
 
@@ -178,7 +228,8 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
 
             //recuperar dados usuario destinatario
-            idUsuarioDestinatario = usuarioDestinatario?.email?.let { codificarBase64(it) }.toString()
+            idUsuarioDestinatario =
+                usuarioDestinatario?.email?.let { codificarBase64(it) }.toString()
         }
     }
 
@@ -205,9 +256,10 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
     override fun onStart() {
         super.onStart()
+        listaMensagens.clear()
+        viewModel.mensagens.value?.clear()
         configuraRecyclerView()
         viewModel.retornaMensagem(idUsuarioRemetente.toString(), idUsuarioDestinatario)
-//        viewModel.retornaDownloadUrl(bitmap).toString()
 
     }
 
