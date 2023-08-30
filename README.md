@@ -38,7 +38,7 @@ Os usuários poderão compartilhar imagens e vídeos usando a câmera do disposi
 
 ## Progresso Atual
 
-Faltando envio de imagens nas mensagens
+Limpeza de código e testes.
 
 ## Contribuição
 
