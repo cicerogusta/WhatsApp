@@ -13,6 +13,7 @@ import com.cicerodev.whatsappcomdi.data.model.Mensagem
 import com.cicerodev.whatsappcomdi.data.model.User
 import com.ciceropinheiro.whatsapp_clone.util.UiState
 import com.ciceropinheiro.whatsapp_clone.util.codificarBase64
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.*
@@ -295,6 +296,29 @@ class FirebaseRepositoryImp(
             }
         }
 
+    }
+
+    override fun getDownloadUrl(imagem: Bitmap, userId: String): MutableLiveData<String> {
+        val liveData = MutableLiveData<String>()
+        val storageReference = storage.reference
+            .child("imagens")
+            .child("mensagem")
+            .child("$userId.jpeg")
+
+        val baos = ByteArrayOutputStream()
+        imagem.compress(Bitmap.CompressFormat.JPEG, 70, baos)
+        val dadosImagem = baos.toByteArray()
+
+        val uploadTask = storageReference.putBytes(dadosImagem)
+        uploadTask.addOnFailureListener {
+
+        }.addOnSuccessListener {
+           storageReference.downloadUrl.addOnCompleteListener {
+               liveData.value = it.result.toString()
+           }
+        }
+
+        return liveData
     }
 
     override fun getUserId(): String? {

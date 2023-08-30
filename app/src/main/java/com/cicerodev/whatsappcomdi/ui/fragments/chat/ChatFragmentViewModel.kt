@@ -1,11 +1,14 @@
 package com.cicerodev.whatsappcomdi.ui.fragments.chat
 
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.cicerodev.whatsappcomdi.data.model.Grupo
 import com.cicerodev.whatsappcomdi.data.model.Mensagem
 import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.data.repository.FirebaseRepository
+import com.google.android.gms.tasks.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -18,6 +21,10 @@ class ChatFragmentViewModel @Inject constructor(private val repository: Firebase
 
     fun retornaIdRemetente(): String? {
         return repository.getUserId()
+    }
+
+    fun getDownloadUrl(imagem: Bitmap, userId: String): MutableLiveData<String> {
+        return repository.getDownloadUrl(imagem, userId)
     }
     fun enviaMensagem(idRemetente: String, idDestinatario: String, msg: Mensagem) {
         repository.sentMessage(idRemetente, idDestinatario, msg)

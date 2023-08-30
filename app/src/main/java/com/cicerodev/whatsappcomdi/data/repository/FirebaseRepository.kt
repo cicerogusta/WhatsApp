@@ -10,6 +10,7 @@ import com.cicerodev.whatsappcomdi.data.model.Grupo
 import com.cicerodev.whatsappcomdi.data.model.Mensagem
 import com.cicerodev.whatsappcomdi.data.model.User
 import com.ciceropinheiro.whatsapp_clone.util.UiState
+import com.google.android.gms.tasks.Task
 
 interface FirebaseRepository {
     fun loginUser(email: String, senha: String, result: (UiState<String>) -> Unit)
@@ -60,6 +61,7 @@ interface FirebaseRepository {
     fun updateProfile(url: Uri): Boolean
     fun getUserProfilePhoto(context: Context): Uri?
     fun saveUserImageCamera(imagem: Bitmap, context: Context)
+    fun getDownloadUrl(imagem: Bitmap, userId: String): MutableLiveData<String>
     fun getNameUser(): String?
     fun updateUser(user: User)
 }

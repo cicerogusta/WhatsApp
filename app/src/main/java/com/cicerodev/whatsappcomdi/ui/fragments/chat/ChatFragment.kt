@@ -1,10 +1,15 @@
 package com.cicerodev.whatsappcomdi.ui.fragments.chat
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.fragment.navArgs
@@ -20,12 +25,34 @@ import com.ciceropinheiro.whatsapp_clone.util.codificarBase64
 
 
 class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() {
+    private var idRemetenteGrupo: String = ""
+    private lateinit var bitmap: Bitmap
     private var idUsuarioRemetente: String? = null
     private var usuarioDestinatario: User? = null
     override val viewModel: ChatFragmentViewModel by hiltNavGraphViewModels(R.id.nav_graph)
     private val args: ChatFragmentArgs by navArgs()
     private var listaMensagens = mutableListOf<Mensagem>()
     private lateinit var idUsuarioDestinatario: String
+
+    private val camera =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                if (result?.data != null) {
+                     bitmap = result.data?.extras?.get("data") as Bitmap
+                    val mensagem = Mensagem()
+                    mensagem.idUsuario = idUsuarioRemetente
+                    mensagem.mensagem = "imagem.jpeg"
+                    viewModel.getDownloadUrl(bitmap, idUsuarioRemetente!!).observe(viewLifecycleOwner) { downloadUrl ->
+                        mensagem.imagem = downloadUrl
+                        idUsuarioRemetente?.let { viewModel.enviaMensagem(it, idUsuarioDestinatario, mensagem) }
+                        idUsuarioRemetente?.let { viewModel.enviaMensagem(idUsuarioDestinatario, it, mensagem) }
+
+                    }
+
+
+                }
+            }
+        }
 
     override fun getViewBinding(
         inflater: LayoutInflater,
@@ -52,6 +79,13 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
         binding.content.fabEnviar.setOnClickListener {
             enviarMensagem()
             binding.content.editMensagem.setText("")
+
+        }
+
+        binding.content.imageCamera.setOnClickListener {
+            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            camera.launch(cameraIntent)
+
 
         }
 
@@ -88,7 +122,7 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
             } else {
 
                 for (membro in args.grupo?.membros!!) {
-                    val idRemetenteGrupo: String = codificarBase64(membro.email)
+                     idRemetenteGrupo = codificarBase64(membro.email)
                     val idUsuarioLogadoGrupo: String = viewModel.retornaIdRemetente().toString()
                     val mensagem = Mensagem()
                     mensagem.idUsuario = (idUsuarioLogadoGrupo)
@@ -173,7 +207,7 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
         super.onStart()
         configuraRecyclerView()
         viewModel.retornaMensagem(idUsuarioRemetente.toString(), idUsuarioDestinatario)
-
+//        viewModel.retornaDownloadUrl(bitmap).toString()
 
     }
 
