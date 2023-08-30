@@ -1,4 +1,4 @@
-# WhatsApp Clone (Projeto Android Kotlin) - Em Desenvolvimento
+# WhatsApp Clone (Projeto Android Kotlin) - Em fase de testes e limpeza de codigo
 
 Este é um projeto de aplicativo Android que implementa uma versão simplificada do WhatsApp. Atualmente, o projeto encontra-se em desenvolvimento e tem como objetivo permitir que os usuários façam login, se registrem, enviem e recebam mensagens, alterem seus dados, usem a câmera e a galeria para trocar imagem de perfil. O aplicativo utilizará as seguintes tecnologias:
 
@@ -9,7 +9,7 @@ Este é um projeto de aplicativo Android que implementa uma versão simplificada
 - Navigation para a navegação entre os fragments.
 - Data Binding para vincular os dados da ViewModel com o layout.
 
-## Funcionalidades Planejadas
+## Funcionalidades Atuais
 
 ### 1. Login e Registro
 Os usuários poderão fazer login ou se registrar no aplicativo usando seus endereços de e-mail e senhas. O Firebase será utilizado para autenticação e gerenciamento dos usuários.
