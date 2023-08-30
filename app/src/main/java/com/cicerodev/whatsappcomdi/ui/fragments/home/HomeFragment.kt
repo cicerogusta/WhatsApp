@@ -14,6 +14,7 @@ import com.cicerodev.whatsappcomdi.adapter.TabViewPagerAdapter
 import com.cicerodev.whatsappcomdi.databinding.FragmentHomeBinding
 import com.cicerodev.whatsappcomdi.extensions.navigateTo
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
+import com.cicerodev.whatsappcomdi.ui.fragments.contatos.ContatosFragment
 import com.cicerodev.whatsappcomdi.ui.fragments.conversas.ConversasFragment
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -74,6 +75,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>() {
                             fragment.pesquisarConversas(newText.lowercase())
                         } else {
                             fragment.recuperarConversas()
+                        }
+                    }
+
+                    1 -> {
+                        val fragment = adapter.fragments[1] as ContatosFragment
+                        if (newText.isNotEmpty()) {
+                            fragment.pesquisarContatos(newText.lowercase())
+                        } else {
+                            fragment.recuperarContatos()
                         }
                     }
                 }
