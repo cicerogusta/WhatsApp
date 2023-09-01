@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.viewbinding.ViewBinding
@@ -25,13 +24,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
     }
 
     protected abstract fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?): VB
-    protected fun setupToolbarFragment(toolbar: Toolbar) {
-        activity?.actionBar?.title = toolbar.title
-        activity?.actionBar?.setDisplayHomeAsUpEnabled(true)
-
-    }
-
-
+    protected abstract fun setupClickListener()
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

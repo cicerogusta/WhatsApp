@@ -7,10 +7,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.cicerodev.whatsappcomdi.R
 import com.cicerodev.whatsappcomdi.adapter.ContatosAdapter
 import com.cicerodev.whatsappcomdi.adapter.GrupoSelecionadoAdapter
 import com.cicerodev.whatsappcomdi.adapter.RecyclerItemClickListener
@@ -19,8 +17,6 @@ import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.databinding.FragmentGrupoBinding
 import com.cicerodev.whatsappcomdi.extensions.navigateTo
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
-import com.cicerodev.whatsappcomdi.ui.fragments.home.HomeFragmentDirections
-import com.cicerodev.whatsappcomdi.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,26 +26,10 @@ class GrupoFragment : BaseFragment<FragmentGrupoBinding, GrupoViewModel>() {
         container: ViewGroup?
     ): FragmentGrupoBinding = FragmentGrupoBinding.inflate(inflater, container, false)
 
-    private val listaMembrosSelecionados: MutableList<User> = ArrayList()
-    private lateinit var grupoSelecionadoAdapter: GrupoSelecionadoAdapter
-    private lateinit var contatosAdapter: ContatosAdapter
-    private val listaMembros: MutableList<User> = ArrayList()
-    override val viewModel: GrupoViewModel by viewModels()
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val toolbar = binding.toolbar
-        val activity = requireActivity() as AppCompatActivity
-        activity.setSupportActionBar(toolbar)
-        activity.supportActionBar?.title = "Novo grupo"
-        activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    override fun setupClickListener() {
         binding.toolbar.setNavigationOnClickListener {
-            activity.onBackPressed()
+            activity?.onBackPressed()
         }
-        configuraRecyclerViewContatos()
-        configuraRecyclerMembrosSelecioados()
-
 
         binding.fabAvancarCadastro.setOnClickListener {
             navigateTo(
@@ -60,13 +40,35 @@ class GrupoFragment : BaseFragment<FragmentGrupoBinding, GrupoViewModel>() {
         }
     }
 
-    fun atualizarMembrosToolbar() {
+    private val listaMembrosSelecionados: MutableList<User> = ArrayList()
+    private lateinit var grupoSelecionadoAdapter: GrupoSelecionadoAdapter
+    private lateinit var contatosAdapter: ContatosAdapter
+    private val listaMembros: MutableList<User> = ArrayList()
+    override val viewModel: GrupoViewModel by viewModels()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupClickListener()
+        setupToolbar()
+        configuraRecyclerViewContatos()
+        configuraRecyclerMembrosSelecioados()
+    }
+
+    private fun setupToolbar() {
+        val toolbar = binding.toolbar
+        val activity = requireActivity() as AppCompatActivity
+        activity.setSupportActionBar(toolbar)
+        activity.supportActionBar?.title = "Novo grupo"
+        activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun atualizarMembrosToolbar() {
         val totalSelecionados = listaMembrosSelecionados.size
         val total = listaMembros.size + totalSelecionados
         binding.toolbar.subtitle = "$totalSelecionados de $total selecionados"
     }
 
-    fun configuraRecyclerViewContatos() {
+    private fun configuraRecyclerViewContatos() {
         contatosAdapter = ContatosAdapter(listaMembros, requireContext())
 
 
@@ -110,7 +112,7 @@ class GrupoFragment : BaseFragment<FragmentGrupoBinding, GrupoViewModel>() {
         )
     }
 
-    fun configuraRecyclerMembrosSelecioados() {
+    private fun configuraRecyclerMembrosSelecioados() {
         //Configurar recyclerview para os membros selecionados
         grupoSelecionadoAdapter =
             GrupoSelecionadoAdapter(listaMembrosSelecionados, requireContext())
@@ -158,7 +160,7 @@ class GrupoFragment : BaseFragment<FragmentGrupoBinding, GrupoViewModel>() {
         )
     }
 
-    fun recuperarContatosGrupo() {
+    private fun recuperarContatosGrupo() {
         viewModel.recuperarContatosGrupo(listaMembros, contatosAdapter)
         atualizarMembrosToolbar()
 

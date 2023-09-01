@@ -8,27 +8,46 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.cicerodev.whatsappcomdi.R
+import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.databinding.FragmentLoginBinding
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
-import com.cicerodev.whatsappcomdi.data.model.User
-import com.ciceropinheiro.whatsapp_clone.util.UiState
 import com.cicerodev.whatsappcomdi.util.toast
+import com.cicerodev.whatsappcomdi.util.UiState
 
 class LoginFragment : BaseFragment<FragmentLoginBinding, LoginViewModel>() {
 
-    lateinit var navigation: NavDirections
+    private lateinit var navDirections: NavDirections
     override val viewModel: LoginViewModel by hiltNavGraphViewModels(R.id.nav_graph)
     override fun getViewBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
-    ): FragmentLoginBinding  = FragmentLoginBinding.inflate(inflater, container, false)
+    ): FragmentLoginBinding = FragmentLoginBinding.inflate(inflater, container, false)
+
+    override fun setupClickListener() {
+        binding.txtCadastro.isClickable = true
+        binding.txtCadastro.setOnClickListener {
+            navDirections = LoginFragmentDirections.actionLoginFragmentToRegisterFragment()
+            callFragment(navDirections)
+        }
+
+        binding.buttonLogar.setOnClickListener {
+            if (validation()) {
+                val user = User(
+                    email = binding.editLoginEmail.text.toString(),
+                    senha = binding.editLoginSenha.text.toString()
+                )
+                viewModel.login(user.email, user.senha)
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setupListeners(binding)
+        setupClickListener()
     }
 
     override fun onStart() {
         super.onStart()
+        observerLoginUser()
         viewModel.getCurrentUser()
         observerCurrentUser()
     }
@@ -36,24 +55,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, LoginViewModel>() {
     private fun observerCurrentUser() {
         viewModel.currentUser.observe(viewLifecycleOwner) {
             if (it == true) {
-                navigation = LoginFragmentDirections.actionLoginFragmentToHomeFragment()
-                callFragment(navigation)
-            }
-        }
-    }
-
-    private fun setupListeners(binding: FragmentLoginBinding) {
-        binding.txtCadastro.isClickable = true
-        binding.txtCadastro.setOnClickListener {
-            navigation = LoginFragmentDirections.actionLoginFragmentToRegisterFragment()
-            callFragment(navigation)
-        }
-
-        binding.buttonLogar.setOnClickListener {
-            if (validation()) {
-                val user = User(email = binding.editLoginEmail.text.toString(), senha = binding.editLoginSenha.text.toString())
-                viewModel.login(user.email, user.senha)
-                observer()
+                navDirections = LoginFragmentDirections.actionLoginFragmentToHomeFragment()
+                callFragment(navDirections)
             }
         }
     }
@@ -62,27 +65,26 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, LoginViewModel>() {
         findNavController().navigate(navigation)
     }
 
-    fun observer(){
+    private fun observerLoginUser() {
         viewModel.login.observe(viewLifecycleOwner) { state ->
-            when(state){
+            when (state) {
                 is UiState.Loading -> {
-//                    binding.loginProgress.show()
                 }
+
                 is UiState.Failure -> {
-//                    binding.loginProgress.hide()
                     toast(state.error)
                 }
+
                 is UiState.Success -> {
-//                    binding.loginProgress.hide()
                     toast(state.data)
-                    navigation = LoginFragmentDirections.actionLoginFragmentToHomeFragment()
-                    callFragment(navigation)
+                    navDirections = LoginFragmentDirections.actionLoginFragmentToHomeFragment()
+                    callFragment(navDirections)
                 }
             }
         }
     }
 
-    fun validation(): Boolean {
+    private fun validation(): Boolean {
         var isValid = true
 
         if (binding.editLoginEmail.text.isNullOrEmpty()) {

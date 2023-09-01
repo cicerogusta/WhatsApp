@@ -42,37 +42,51 @@ class CadastroGrupoFragment : BaseFragment<FragmentCadastroGrupoBinding, Cadastr
         container: ViewGroup?
     ): FragmentCadastroGrupoBinding = FragmentCadastroGrupoBinding.inflate(layoutInflater)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        grupo = Grupo()
-        val toolbar = binding.toolbar
-        val activity = requireActivity() as AppCompatActivity
-        activity.setSupportActionBar(toolbar)
-        activity.supportActionBar?.title = "Novo grupo"
-        activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.toolbar.setNavigationOnClickListener {
-            activity.onBackPressed()
-        }
+    override fun setupClickListener() {
         binding.content.imageGrupo.setOnClickListener {
             gallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
-
-        recuperaListaMembro()
         binding.fabSalvarGrupo.setOnClickListener {
             val nomeGrupo: String = binding.content.editNomeGrupo.getText().toString()
             listaMembrosSelecionados.add(viewModel.retornaUsuarioAtual())
+            grupo = Grupo()
             grupo.membros = listaMembrosSelecionados
             grupo.nome = nomeGrupo
             viewModel.salvarGrupo(grupo)
             val tipoChat = "chatGrupo"
-            navigateTo(CadastroGrupoFragmentDirections.actionCadastroGrupoFragmentToChatFragment(null, tipoChat, grupo))
+            navigateTo(
+                CadastroGrupoFragmentDirections.actionCadastroGrupoFragmentToChatFragment(
+                    null,
+                    tipoChat,
+                    grupo
+                )
+            )
 
 
         }
     }
 
-    private fun recuperaListaMembro() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupToolbar()
+        setupClickListener()
+        configRecyclerViewMembros()
+
+    }
+
+    private fun setupToolbar() {
+        val activity = requireActivity() as AppCompatActivity
+        activity.setSupportActionBar(binding.toolbar)
+        activity.supportActionBar?.title = "Novo grupo"
+        activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.toolbar.setNavigationOnClickListener {
+            activity.onBackPressed()
+        }
+    }
+
+    private fun configRecyclerViewMembros() {
         val listaMembros = args.listaMembosSelecionados.mutableList
         listaMembrosSelecionados.addAll(listaMembros)
         binding.content.textTotalParticipantes.text =

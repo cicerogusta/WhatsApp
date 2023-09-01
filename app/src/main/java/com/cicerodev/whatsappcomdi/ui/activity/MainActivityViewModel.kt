@@ -7,12 +7,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(private val repository: FirebaseRepository) :
-    ViewModel() {
-
-    fun deslogaUsuario() {
-        repository.logout()
-
-    }
+    ViewModel()
 
 
-    }
+
+

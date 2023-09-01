@@ -9,6 +9,7 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -21,7 +22,7 @@ import com.cicerodev.whatsappcomdi.data.model.Mensagem
 import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.databinding.FragmentChatBinding
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
-import com.ciceropinheiro.whatsapp_clone.util.codificarBase64
+import com.cicerodev.whatsappcomdi.util.codificarBase64
 
 
 class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() {
@@ -37,95 +38,83 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
     private val camera =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                if (result?.data != null) {
-                    bitmap = result.data?.extras?.get("data") as Bitmap
-                    if (usuarioDestinatario != null) {
-                        val mensagem = Mensagem()
-                        mensagem.idUsuario = idUsuarioRemetente
-                        mensagem.mensagem = "imagem.jpeg"
-                        viewModel.getDownloadUrl(bitmap, idUsuarioRemetente!!)
-                            .observe(viewLifecycleOwner) { downloadUrl ->
-                                mensagem.imagem = downloadUrl
-                                idUsuarioRemetente?.let {
-                                    viewModel.enviaMensagem(
-                                        it,
-                                        idUsuarioDestinatario,
-                                        mensagem
-                                    )
-                                }
-                                idUsuarioRemetente?.let {
-                                    viewModel.enviaMensagem(
-                                        idUsuarioDestinatario,
-                                        it,
-                                        mensagem
-                                    )
-                                }
+                enviarMensagemImagem(result)
+            }
+        }
 
-
-                            }
-                    } else {
+    private fun enviarMensagemImagem(result: ActivityResult) {
+        if (result.data != null) {
+            bitmap = result.data?.extras?.get("data") as Bitmap
+            if (usuarioDestinatario != null) {
+                val mensagem = Mensagem()
+                mensagem.idUsuario = idUsuarioRemetente
+                mensagem.mensagem = "imagem.jpeg"
+                viewModel.getDownloadUrl(bitmap, idUsuarioRemetente!!)
+                    .observe(viewLifecycleOwner) { downloadUrl ->
+                        mensagem.imagem = downloadUrl
                         idUsuarioRemetente?.let {
-                            viewModel.getDownloadUrl(bitmap, it)
-                                .observe(viewLifecycleOwner) { downloadUrl ->
-                                    for (membro in args.grupo?.membros!!) {
-                                        idRemetenteGrupo = codificarBase64(membro.email)
-                                        val idUsuarioLogadoGrupo: String =
-                                            viewModel.retornaIdRemetente().toString()
-                                        val mensagem = Mensagem()
-                                        mensagem.idUsuario = (idUsuarioLogadoGrupo)
-                                        mensagem.mensagem = ("imagem.jpeg")
-                                        mensagem.nome = (viewModel.retornaUsuarioLogado().nome)
-                                        mensagem.imagem = downloadUrl
-
-                                        //salvar mensagem para o membro
-                                        viewModel.enviaMensagem(
-                                            idRemetenteGrupo,
-                                            idUsuarioDestinatario,
-                                            mensagem
-                                        )
-
-                                        //Salvar conversa
-                                        viewModel.salvaConversa(
-                                            idRemetenteGrupo,
-                                            idUsuarioDestinatario,
-                                            usuarioDestinatario,
-                                            mensagem,
-                                            true, args.grupo
-                                        )
-                                    }
-                                }
+                            viewModel.enviaMensagem(
+                                it,
+                                idUsuarioDestinatario,
+                                mensagem
+                            )
+                        }
+                        idUsuarioRemetente?.let {
+                            viewModel.enviaMensagem(
+                                idUsuarioDestinatario,
+                                it,
+                                mensagem
+                            )
                         }
 
 
                     }
+            } else {
+                idUsuarioRemetente?.let {
+                    viewModel.getDownloadUrl(bitmap, it)
+                        .observe(viewLifecycleOwner) { downloadUrl ->
+                            for (membro in args.grupo?.membros!!) {
+                                idRemetenteGrupo = codificarBase64(membro.email)
+                                val idUsuarioLogadoGrupo: String =
+                                    viewModel.retornaIdRemetente().toString()
+                                val mensagem = Mensagem()
+                                mensagem.idUsuario = (idUsuarioLogadoGrupo)
+                                mensagem.mensagem = ("imagem.jpeg")
+                                mensagem.nome = (viewModel.retornaUsuarioLogado().nome)
+                                mensagem.imagem = downloadUrl
 
+                                //salvar mensagem para o membro
+                                viewModel.enviaMensagem(
+                                    idRemetenteGrupo,
+                                    idUsuarioDestinatario,
+                                    mensagem
+                                )
 
+                                //Salvar conversa
+                                viewModel.salvaConversa(
+                                    idRemetenteGrupo,
+                                    idUsuarioDestinatario,
+                                    usuarioDestinatario,
+                                    mensagem,
+                                    true, args.grupo
+                                )
+                            }
+                        }
                 }
+
+
             }
+
+
         }
+    }
 
     override fun getViewBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
     ): FragmentChatBinding = FragmentChatBinding.inflate(layoutInflater)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val toolbar = binding.toolbar
-        toolbar.title = ""
-        val appCompatActivity = (activity as AppCompatActivity?)!!
-        appCompatActivity.setSupportActionBar(toolbar)
-        appCompatActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        toolbar.setNavigationOnClickListener {
-            activity?.onBackPressed()
-        }
-
-        idUsuarioRemetente = viewModel.retornaIdRemetente()
-
-        viewModel.mensagens.value?.clear()
-        observer()
-        recuperaDadosUsuarioDestinatario()
-
+    override fun setupClickListener() {
         binding.content.fabEnviar.setOnClickListener {
             enviarMensagem()
             binding.content.editMensagem.setText("")
@@ -138,7 +127,31 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
 
         }
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupClickListener()
+        setupToolbar()
+
+        idUsuarioRemetente = viewModel.retornaIdRemetente()
+
+        viewModel.mensagens.value?.clear()
+        observer()
+        recuperaDadosUsuarioDestinatario()
+
+
+    }
+
+    private fun setupToolbar() {
+        val toolbar = binding.toolbar
+        toolbar.title = ""
+        val appCompatActivity = (activity as AppCompatActivity?)!!
+        appCompatActivity.setSupportActionBar(toolbar)
+        appCompatActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toolbar.setNavigationOnClickListener {
+            activity?.onBackPressed()
+        }
     }
 
     private fun enviarMensagem() {

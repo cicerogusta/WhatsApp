@@ -11,9 +11,8 @@ import com.cicerodev.whatsappcomdi.data.model.Conversa
 import com.cicerodev.whatsappcomdi.data.model.Grupo
 import com.cicerodev.whatsappcomdi.data.model.Mensagem
 import com.cicerodev.whatsappcomdi.data.model.User
-import com.ciceropinheiro.whatsapp_clone.util.UiState
-import com.ciceropinheiro.whatsapp_clone.util.codificarBase64
-import com.google.android.gms.tasks.Task
+import com.cicerodev.whatsappcomdi.util.UiState
+import com.cicerodev.whatsappcomdi.util.codificarBase64
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.*

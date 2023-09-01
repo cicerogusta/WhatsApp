@@ -4,13 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.cicerodev.whatsappcomdi.data.repository.FirebaseRepository
-import com.ciceropinheiro.whatsapp_clone.util.UiState
+import com.cicerodev.whatsappcomdi.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val  repository: FirebaseRepository
+    private val repository: FirebaseRepository
 
 ) : ViewModel() {
     private val _login = MutableLiveData<UiState<String>>()
@@ -23,7 +23,7 @@ class LoginViewModel @Inject constructor(
 
     fun login(
         email: String,
-        senha : String
+        senha: String
     ) {
         _login.value = UiState.Loading
         repository.loginUser(

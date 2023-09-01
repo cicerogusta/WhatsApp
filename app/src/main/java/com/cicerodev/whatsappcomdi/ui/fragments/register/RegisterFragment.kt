@@ -8,13 +8,13 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.cicerodev.whatsappcomdi.R
+import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.databinding.FragmentCadastroBinding
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
-import com.cicerodev.whatsappcomdi.data.model.User
-import com.ciceropinheiro.whatsapp_clone.util.UiState
-import com.ciceropinheiro.whatsapp_clone.util.codificarBase64
 import com.cicerodev.whatsappcomdi.util.isValidEmail
 import com.cicerodev.whatsappcomdi.util.toast
+import com.cicerodev.whatsappcomdi.util.UiState
+import com.cicerodev.whatsappcomdi.util.codificarBase64
 
 class RegisterFragment : BaseFragment<FragmentCadastroBinding, RegisterViewModel>() {
 
@@ -23,34 +23,43 @@ class RegisterFragment : BaseFragment<FragmentCadastroBinding, RegisterViewModel
         container: ViewGroup?
     ): FragmentCadastroBinding = FragmentCadastroBinding.inflate(layoutInflater, container, false)
 
+    override fun setupClickListener() {
+        binding.buttonCadastrar.setOnClickListener {
+            signUpUser()
+        }
+    }
+
     lateinit var navigation: NavDirections
     override val viewModel: RegisterViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.buttonCadastrar.setOnClickListener {
-            SignUpUser()
-        }
+        setupClickListener()
 
     }
 
-    private fun SignUpUser() {
+    private fun signUpUser() {
         if (validation()) {
             try {
-                val usuario = User(nome = binding.editNome.text.toString(), email = binding.editEmail.text.toString(), senha = binding.editSenha.text.toString(), foto = "")
+                val usuario = User(
+                    nome = binding.editNome.text.toString(),
+                    email = binding.editEmail.text.toString(),
+                    senha = binding.editSenha.text.toString(),
+                    foto = ""
+                )
                 val idUsuario = codificarBase64(usuario.email)
                 usuario.id = idUsuario
                 viewModel.registerUser(usuario)
 
                 observer()
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
 
         }
     }
 
-    fun validation(): Boolean {
+    private fun validation(): Boolean {
         var isValid = true
 
         if (binding.editNome.text.isNullOrEmpty()) {
@@ -72,7 +81,7 @@ class RegisterFragment : BaseFragment<FragmentCadastroBinding, RegisterViewModel
                     } else {
                         if (binding.editSenha.text.toString().length < 8) {
                             isValid = false
-                            toast("A senha deve conter 8 caracteres")
+                            toast("A senha deve conter 6 caracteres")
                         }
                     }
                 }
@@ -87,16 +96,18 @@ class RegisterFragment : BaseFragment<FragmentCadastroBinding, RegisterViewModel
         findNavController().navigate(navigation)
     }
 
-    fun observer(){
+    private fun observer() {
         viewModel.register.observe(viewLifecycleOwner) { state ->
-            when(state){
+            when (state) {
                 is UiState.Loading -> {
 //                    binding.loginProgress.show()
                 }
+
                 is UiState.Failure -> {
 //                    binding.loginProgress.hide()
                     toast(state.error)
                 }
+
                 is UiState.Success -> {
 //                    binding.loginProgress.hide()
                     toast(state.data)

@@ -1,7 +1,6 @@
 package com.cicerodev.whatsappcomdi.ui.activity
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
@@ -24,20 +23,24 @@ import com.cicerodev.whatsappcomdi.util.Permissao
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ConfiguracoesActivity : BaseActivity<ConfiguracoesActivityViewModel, ActivityConfiguracoesBinding>() {
+class ConfiguracoesActivity :
+    BaseActivity<ConfiguracoesActivityViewModel, ActivityConfiguracoesBinding>() {
     private var uri: Uri? = null
     private val permissoesNecessarias = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.CAMERA
     )
-    private val gallery = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) {
-            viewModel.salvarImagemGaleria(this,uri)
-            binding.circleImageViewFotoPerfil.setImageURI(uri)
-        } else {
-            binding.circleImageViewFotoPerfil.setImageResource(R.drawable.padrao)
+    private var user: User = User()
+    override val viewModel: ConfiguracoesActivityViewModel by viewModels()
+    private val gallery =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (uri != null) {
+                viewModel.salvarImagemGaleria(this, uri)
+                binding.circleImageViewFotoPerfil.setImageURI(uri)
+            } else {
+                binding.circleImageViewFotoPerfil.setImageResource(R.drawable.padrao)
+            }
         }
-    }
 
 
     private val camera =
@@ -51,38 +54,13 @@ class ConfiguracoesActivity : BaseActivity<ConfiguracoesActivityViewModel, Activ
             }
         }
 
-    private var user : User = User()
-    override val viewModel: ConfiguracoesActivityViewModel by viewModels()
+    override fun getViewBinding(): ActivityConfiguracoesBinding =
+        ActivityConfiguracoesBinding.inflate(layoutInflater)
 
-
-    override fun getViewBinding(): ActivityConfiguracoesBinding = ActivityConfiguracoesBinding.inflate(layoutInflater)
-
-    @SuppressLint("QueryPermissionsNeeded")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Permissao.validarPermissoes(permissoesNecessarias, this, 1)
-        observer()
-        val toolbar = binding.toolbarConfig.toolbarPrincipal
-        toolbar.title = "Configurações"
-        setSupportActionBar(toolbar)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        viewModel.pegaPerfilUsuario()
-
-         uri = viewModel.pegaPerfilFotoUsuario(this)
-        if (uri !=null) {
-            Glide.with(this).load(uri.toString()).into(binding.circleImageViewFotoPerfil)
-
-
-        } else {
-            binding.circleImageViewFotoPerfil.setImageResource(R.drawable.padrao)
-
-        }
-
+    override fun setupClickListener() {
         binding.imageButtonCamera.setOnClickListener {
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             camera.launch(cameraIntent)
-
-
         }
 
         binding.imageButtonGaleria.setOnClickListener {
@@ -91,14 +69,42 @@ class ConfiguracoesActivity : BaseActivity<ConfiguracoesActivityViewModel, Activ
         }
 
         binding.imageAtualizarNome.setOnClickListener {
-            val userUpdated = User(user.id, binding.editPerfilNome.text.toString(), user.email, user.senha, uri.toString())
+            val userUpdated = User(
+                user.id,
+                binding.editPerfilNome.text.toString(),
+                user.email,
+                user.senha,
+                uri.toString()
+            )
 
             viewModel.atualizarUsuario(userUpdated)
 
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Permissao.validarPermissoes(permissoesNecessarias, this, 1)
+        setupToolbar()
+        observer()
+        viewModel.pegaPerfilUsuario()
+
+        uri = viewModel.pegaPerfilFotoUsuario(this)
+        if (uri != null) {
+            Glide.with(this).load(uri.toString()).into(binding.circleImageViewFotoPerfil)
 
 
+        } else {
+            binding.circleImageViewFotoPerfil.setImageResource(R.drawable.padrao)
 
+        }
+    }
+
+    private fun setupToolbar() {
+        val toolbar = binding.toolbarConfig.toolbarPrincipal
+        toolbar.title = "Configurações"
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onRequestPermissionsResult(
@@ -120,9 +126,11 @@ class ConfiguracoesActivity : BaseActivity<ConfiguracoesActivityViewModel, Activ
         builder.setTitle("Permissões Negadas")
         builder.setMessage("Para utilizar o app é necessário aceitar as permissões")
         builder.setCancelable(false)
-        builder.setPositiveButton("Confirmar", DialogInterface.OnClickListener { dialogInterface, i ->
-            finish()
-        })
+        builder.setPositiveButton(
+            "Confirmar",
+            DialogInterface.OnClickListener { dialogInterface, i ->
+                finish()
+            })
 
         val dialog = builder.create()
         dialog.show()
@@ -130,7 +138,7 @@ class ConfiguracoesActivity : BaseActivity<ConfiguracoesActivityViewModel, Activ
 
     private fun observer() {
         viewModel.register.observe(this) {
-            if (it !=null) {
+            if (it != null) {
 
                 user = it
                 binding.editPerfilNome.setText(user.nome)

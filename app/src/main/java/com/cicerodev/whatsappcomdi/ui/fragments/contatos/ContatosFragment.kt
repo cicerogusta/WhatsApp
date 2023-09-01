@@ -1,31 +1,70 @@
 package com.cicerodev.whatsappcomdi.ui.fragments.contatos
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cicerodev.whatsappcomdi.R
 import com.cicerodev.whatsappcomdi.adapter.ContatosAdapter
 import com.cicerodev.whatsappcomdi.adapter.RecyclerItemClickListener
-import com.cicerodev.whatsappcomdi.databinding.FragmentContatosBinding
-import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
 import com.cicerodev.whatsappcomdi.data.model.User
+import com.cicerodev.whatsappcomdi.databinding.FragmentContatosBinding
 import com.cicerodev.whatsappcomdi.extensions.navigateTo
+import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
 import com.cicerodev.whatsappcomdi.ui.fragments.home.HomeFragmentDirections
 
 class ContatosFragment : BaseFragment<FragmentContatosBinding, ContatosViewModel>() {
     private lateinit var listaContatos: MutableList<User>
     private lateinit var contatosAdapter: ContatosAdapter
-    lateinit var mActivity: FragmentActivity
     override fun getViewBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
     ): FragmentContatosBinding = FragmentContatosBinding.inflate(inflater, container, false)
+
+    override fun setupClickListener() {
+        binding.recyclerViewListaContatos.addOnItemTouchListener(
+            RecyclerItemClickListener(
+                activity,
+                binding.recyclerViewListaContatos,
+                object : RecyclerItemClickListener.OnItemClickListener {
+                    override fun onItemClick(view: View?, position: Int) {
+                        val cabecalho = listaContatos[position].email.isEmpty()
+                        if (cabecalho) {
+                            navigateTo(HomeFragmentDirections.actionHomeFragmentToGrupoFragment())
+                        } else {
+                            val tipoChat = "chatContato"
+                            navigateTo(
+                                HomeFragmentDirections.actionHomeFragmentToChatFragment(
+                                    listaContatos[position],
+                                    tipoChat,
+                                    null
+                                )
+                            )
+
+                        }
+
+
+                    }
+
+                    override fun onItemClick(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+
+                    }
+
+                    override fun onLongItemClick(view: View?, position: Int) {
+
+                    }
+
+                })
+        )
+    }
 
     override val viewModel: ContatosViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
@@ -33,19 +72,20 @@ class ContatosFragment : BaseFragment<FragmentContatosBinding, ContatosViewModel
         super.onViewCreated(view, savedInstanceState)
         viewModel.getAllUsers()
         observer()
+        configurarRecyclerView()
 
     }
 
     private fun observer() {
         viewModel.users.observe(viewLifecycleOwner) {
-            configurarRecyclerView(it)
+            listaContatos = it
         }
     }
 
-    private fun configurarRecyclerView(it: MutableList<User>) {
+    private fun configurarRecyclerView() {
         binding.recyclerViewListaContatos.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            contatosAdapter = ContatosAdapter(it, requireContext())
+            contatosAdapter = ContatosAdapter(listaContatos, requireContext())
             adapter = contatosAdapter
         }
         binding.recyclerViewListaContatos.addOnItemTouchListener(
@@ -54,14 +94,14 @@ class ContatosFragment : BaseFragment<FragmentContatosBinding, ContatosViewModel
                 binding.recyclerViewListaContatos,
                 object : RecyclerItemClickListener.OnItemClickListener {
                     override fun onItemClick(view: View?, position: Int) {
-                        val cabecalho = it[position].email.isEmpty()
+                        val cabecalho = listaContatos[position].email.isEmpty()
                         if (cabecalho) {
                             navigateTo(HomeFragmentDirections.actionHomeFragmentToGrupoFragment())
                         } else {
                             val tipoChat = "chatContato"
                             navigateTo(
                                 HomeFragmentDirections.actionHomeFragmentToChatFragment(
-                                    it[position],
+                                    listaContatos[position],
                                     tipoChat,
                                     null
                                 )
@@ -111,11 +151,6 @@ class ContatosFragment : BaseFragment<FragmentContatosBinding, ContatosViewModel
         contatosAdapter = ContatosAdapter(listaContatos, requireContext())
         binding.recyclerViewListaContatos.adapter = contatosAdapter
         contatosAdapter.notifyDataSetChanged()
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        activity?.let { mActivity = it }
     }
 }
 

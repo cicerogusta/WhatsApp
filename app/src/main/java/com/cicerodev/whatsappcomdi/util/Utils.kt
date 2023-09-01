@@ -1,4 +1,4 @@
-package com.ciceropinheiro.whatsapp_clone.util
+package com.cicerodev.whatsappcomdi.util
 
 import android.util.Base64
 

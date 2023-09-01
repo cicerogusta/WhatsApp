@@ -12,6 +12,10 @@ class MainActivity : BaseActivity<MainActivityViewModel, ActivityMainBinding>() 
     override fun getViewBinding(): ActivityMainBinding {
         return ActivityMainBinding.inflate(layoutInflater)
     }
+
+    override fun setupClickListener() {
+        TODO("Not yet implemented")
+    }
 }
 
 

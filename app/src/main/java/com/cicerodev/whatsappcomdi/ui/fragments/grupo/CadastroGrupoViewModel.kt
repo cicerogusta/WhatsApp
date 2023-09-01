@@ -10,16 +10,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class CadastroGrupoViewModel@Inject constructor(
+class CadastroGrupoViewModel @Inject constructor(
     private val repository: FirebaseRepository
 ) : ViewModel() {
 
     fun salvarImagemGrupoGaleria(context: Context, uri: Uri, grupo: Grupo) {
         repository.saveGroupImageGalery(uri, context, grupo)
-
     }
 
-    fun retornaUsuarioAtual() : User = repository.returnCurrentUser()
+    fun retornaUsuarioAtual(): User = repository.returnCurrentUser()
 
     fun salvarGrupo(grupo: Grupo) {
         repository.saveGroup(grupo)

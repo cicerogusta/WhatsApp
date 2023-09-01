@@ -1,4 +1,4 @@
-package com.ciceropinheiro.whatsapp_clone.util
+package com.cicerodev.whatsappcomdi.util
 
 sealed class UiState<out T> {
     object Loading: UiState<Nothing>()

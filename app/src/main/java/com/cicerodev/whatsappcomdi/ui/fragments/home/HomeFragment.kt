@@ -6,7 +6,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.cicerodev.whatsappcomdi.R
@@ -29,21 +28,31 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>() {
     private lateinit var adapter: TabViewPagerAdapter
     override val viewModel: HomeViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.mainToolbar.toolbarPrincipal.title ="WhatsApp"
-        binding.viewPagerTab.setTabTextColors(resources.getColor(R.color.branco), resources.getColor(R.color.branco))
-        setupMenuToolbar(binding.mainToolbar.toolbarPrincipal)
-        setupViews()
+
+        setupViewPager()
+        setupToolbar()
     }
 
-    private fun setupMenuToolbar(toolbar: Toolbar) {
-        toolbar.inflateMenu(R.menu.menu_main)
-        val searchItem: MenuItem = toolbar.menu.findItem(R.id.menuPesquisa)
+    private fun setupToolbar() {
+        binding.mainToolbar.toolbarPrincipal.title = "WhatsApp"
+        binding.viewPagerTab.setTabTextColors(
+            resources.getColor(R.color.branco),
+            resources.getColor(R.color.branco)
+        )
+        setupMenuToolbar()
+    }
+
+    private fun setupMenuToolbar() {
+        binding.mainToolbar.toolbarPrincipal.inflateMenu(R.menu.menu_main)
+        setupSearchView()
+
+    }
+
+    private fun setupSearchView() {
+        val searchItem: MenuItem =
+            binding.mainToolbar.toolbarPrincipal.menu.findItem(R.id.menuPesquisa)
         val searchView: SearchView? = searchItem.actionView as SearchView?
         searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem): Boolean {
@@ -51,7 +60,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>() {
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                when(viewPager.currentItem) {
+                when (viewPager.currentItem) {
 
                     0 -> {
                         val fragment = adapter.fragments[0] as ConversasFragment
@@ -68,7 +77,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                when(viewPager.currentItem) {
+                when (viewPager.currentItem) {
                     0 -> {
                         val fragment = adapter.fragments[0] as ConversasFragment
                         if (newText.isNotEmpty()) {
@@ -90,12 +99,26 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>() {
                 return true
             }
         })
-        toolbar.setOnMenuItemClickListener { item ->
+    }
+
+    private fun setupViewPager() {
+        val tabLayout = binding.viewPagerTab
+        viewPager = binding.viewPager
+        adapter = TabViewPagerAdapter(this)
+        viewPager.adapter = adapter
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            tab.text = getString(adapter.tabs[position])
+        }.attach()
+    }
+
+    override fun setupClickListener() {
+        binding.mainToolbar.toolbarPrincipal.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.menuSair -> {
                     viewModel.deslogaUsuario()
                     navigateTo(HomeFragmentDirections.actionHomeFragmentToLoginFragment())
                 }
+
                 R.id.menuConfiguracoes -> {
                     navigateTo(HomeFragmentDirections.actionHomeFragmentToConfiguracoesActivity())
                 }
@@ -104,17 +127,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>() {
 
         }
     }
-
-    private fun setupViews() {
-        val tabLayout = binding.viewPagerTab
-         viewPager = binding.viewPager
-         adapter = TabViewPagerAdapter(this)
-        viewPager.adapter = adapter
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = getString(adapter.tabs[position])
-        }.attach()
-    }
-
 
 
 }

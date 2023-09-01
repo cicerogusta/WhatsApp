@@ -34,7 +34,7 @@ class ConfiguracoesActivityViewModel @Inject constructor(private val repository:
     }
 
     fun pegaPerfilUsuario() {
-         repository.getUserProfileInDatabase(_user)
+        repository.getUserProfileInDatabase(_user)
     }
 
     fun atualizarUsuario(user: User) {

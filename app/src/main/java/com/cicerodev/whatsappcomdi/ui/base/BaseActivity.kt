@@ -25,7 +25,7 @@ abstract class BaseActivity<VM : ViewModel, VB : ViewBinding> : AppCompatActivit
     }
 
 
-
     abstract fun getViewBinding(): VB
+    abstract fun setupClickListener()
 
 }
