@@ -34,7 +34,6 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
     private val args: ChatFragmentArgs by navArgs()
     private var listaMensagens = mutableListOf<Mensagem>()
     private lateinit var idUsuarioDestinatario: String
-
     private val camera =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -42,6 +41,22 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
             }
 
         }
+
+    override fun getViewBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentChatBinding = FragmentChatBinding.inflate(layoutInflater)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupClickListener()
+        setupToolbar()
+        observer()
+        idUsuarioRemetente = viewModel.retornaIdRemetente()
+        recuperaDadosUsuarioDestinatario()
+
+
+    }
 
     private fun enviarMensagemImagem(result: ActivityResult) {
         val bitmap = result.data?.extras?.get("data") as Bitmap
@@ -98,11 +113,6 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
     }
 
-    override fun getViewBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentChatBinding = FragmentChatBinding.inflate(layoutInflater)
-
     override fun setupClickListener() {
         binding.content.fabEnviar.setOnClickListener {
             enviarMensagem()
@@ -116,17 +126,6 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
 
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupClickListener()
-        setupToolbar()
-        observer()
-        idUsuarioRemetente = viewModel.retornaIdRemetente()
-        recuperaDadosUsuarioDestinatario()
-
-
     }
 
     private fun setupToolbar() {
