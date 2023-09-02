@@ -28,10 +28,12 @@ class ConversasAdapter(val conversas: MutableList<Conversa>, private val context
         if (!conversa.equals(null)) {
             if (conversa.isGroup == "true") {
                 val grupo = conversa.grupo
-                if (!grupo.equals(null)) {
-                    holder.nome.text = grupo.nome
+                if (grupo != null) {
+                    if (!grupo.equals(null)) {
+                        holder.nome.text = grupo.nome
+                    }
                 }
-                if (!grupo.equals(null)) {
+                if (grupo != null) {
                     if (grupo.foto != "") {
                         val uri = Uri.parse(grupo.foto)
                         Glide.with(context).load(uri).into(holder.foto)

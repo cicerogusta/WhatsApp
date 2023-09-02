@@ -22,12 +22,7 @@ interface FirebaseRepository {
     )
 
     fun saveConversa(
-        idRemetente: String,
-        idDestinatario: String,
-        usuarioExibicao: User?,
-        mensagem: Mensagem,
-        isGroup: Boolean,
-        grupo: Grupo?
+        conversa: Conversa
     )
 
     fun saveGroup(grupo: Grupo)

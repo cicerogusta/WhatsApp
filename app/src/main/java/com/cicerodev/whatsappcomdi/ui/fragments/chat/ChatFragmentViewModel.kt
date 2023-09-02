@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.cicerodev.whatsappcomdi.data.model.Conversa
 import com.cicerodev.whatsappcomdi.data.model.Grupo
 import com.cicerodev.whatsappcomdi.data.model.Mensagem
 import com.cicerodev.whatsappcomdi.data.model.User
@@ -13,7 +14,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class ChatFragmentViewModel @Inject constructor(private val repository: FirebaseRepository): ViewModel() {
+class ChatFragmentViewModel @Inject constructor(private val repository: FirebaseRepository) :
+    ViewModel() {
 
     private val _mensagens = MutableLiveData<MutableList<Mensagem>>()
     val mensagens: MutableLiveData<MutableList<Mensagem>>
@@ -26,9 +28,11 @@ class ChatFragmentViewModel @Inject constructor(private val repository: Firebase
     fun getDownloadUrl(imagem: Bitmap, userId: String): MutableLiveData<String> {
         return repository.getDownloadUrl(imagem, userId)
     }
+
     fun enviaMensagem(idRemetente: String, idDestinatario: String, msg: Mensagem) {
         repository.sentMessage(idRemetente, idDestinatario, msg)
     }
+
     fun retornaMensagem(idRemetente: String, idDestinatario: String) {
         repository.getMessage(idRemetente, idDestinatario, _mensagens)
     }
@@ -36,13 +40,10 @@ class ChatFragmentViewModel @Inject constructor(private val repository: Firebase
     fun retornaUsuarioLogado() = repository.returnCurrentUser()
 
     fun salvaConversa(
-        idRemetente: String,
-        idDestinatario: String,
-        usuarioExibicao: User?,
-        mensagem: Mensagem,
-        isGroup: Boolean,
-        grupo: Grupo?
+        conversa: Conversa
     ) {
-            repository.saveConversa(idRemetente, idDestinatario, usuarioExibicao, mensagem, isGroup, grupo)
+        repository.saveConversa(
+            conversa
+        )
     }
 }

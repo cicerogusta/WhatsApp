@@ -18,12 +18,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cicerodev.whatsappcomdi.R
 import com.cicerodev.whatsappcomdi.adapter.MensagensAdapter
+import com.cicerodev.whatsappcomdi.data.model.Conversa
 import com.cicerodev.whatsappcomdi.data.model.Mensagem
 import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.databinding.FragmentChatBinding
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
 import com.cicerodev.whatsappcomdi.util.codificarBase64
-import com.cicerodev.whatsappcomdi.util.toast
 
 
 class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() {
@@ -52,24 +52,20 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
                 mensagem.imagem = it
                 mensagem.mensagem = "imagem.jpeg"
 
-
+                val conversaRemetente = Conversa(
+                    idUsuarioRemetente!!,
+                    idUsuarioDestinatario,
+                    mensagem.mensagem.toString(),
+                    usuarioDestinatario,
+                    "false", null
+                )
                 viewModel.enviaMensagem(idUsuarioRemetente!!, idUsuarioDestinatario, mensagem)
                 viewModel.enviaMensagem(idUsuarioDestinatario, idUsuarioRemetente!!, mensagem)
                 viewModel.salvaConversa(
-                    idUsuarioRemetente!!,
-                    idUsuarioDestinatario,
-                    usuarioDestinatario!!,
-                    mensagem,
-                    false,
-                    null
+                    conversaRemetente
                 )
                 viewModel.salvaConversa(
-                    idUsuarioDestinatario,
-                    idUsuarioRemetente!!,
-                    viewModel.retornaUsuarioLogado(),
-                    mensagem,
-                    false,
-                    null
+                    conversaRemetente
                 )
 
 
@@ -85,14 +81,16 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
                     //salvar mensagem para o membro
                     viewModel.enviaMensagem(idRemetenteGrupo, idUsuarioDestinatario, mensagem)
-
+                    val conversaRemetente = Conversa(
+                        idUsuarioRemetente!!,
+                        idUsuarioDestinatario,
+                        mensagem.mensagem.toString(),
+                        usuarioDestinatario,
+                        "true", args.grupo
+                    )
                     //Salvar conversa
                     viewModel.salvaConversa(
-                        idRemetenteGrupo,
-                        idUsuarioDestinatario,
-                        usuarioDestinatario,
-                        mensagem,
-                        true, args.grupo
+                        conversaRemetente
                     )
                 }
             }
@@ -152,21 +150,18 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
                 viewModel.enviaMensagem(idUsuarioRemetente!!, idUsuarioDestinatario, mensagem)
                 viewModel.enviaMensagem(idUsuarioDestinatario, idUsuarioRemetente!!, mensagem)
-                viewModel.salvaConversa(
+                val conversaRemetente = Conversa(
                     idUsuarioRemetente!!,
                     idUsuarioDestinatario,
-                    usuarioDestinatario!!,
-                    mensagem,
-                    false,
-                    null
+                    mensagem.mensagem.toString(),
+                    usuarioDestinatario,
+                    "false", null
                 )
                 viewModel.salvaConversa(
-                    idUsuarioDestinatario,
-                    idUsuarioRemetente!!,
-                    viewModel.retornaUsuarioLogado(),
-                    mensagem,
-                    false,
-                    null
+                    conversaRemetente
+                )
+                viewModel.salvaConversa(
+                    conversaRemetente
                 )
 
 
@@ -183,13 +178,16 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
                     //salvar mensagem para o membro
                     viewModel.enviaMensagem(idRemetenteGrupo, idUsuarioDestinatario, mensagem)
 
+                    val conversaRemetente = Conversa(
+                        idUsuarioRemetente!!,
+                        idUsuarioDestinatario,
+                        mensagem.mensagem.toString(),
+                        usuarioDestinatario,
+                        "true", args.grupo
+                    )
                     //Salvar conversa
                     viewModel.salvaConversa(
-                        idRemetenteGrupo,
-                        idUsuarioDestinatario,
-                        usuarioDestinatario,
-                        mensagem,
-                        true, args.grupo
+                        conversaRemetente
                     )
                 }
             }

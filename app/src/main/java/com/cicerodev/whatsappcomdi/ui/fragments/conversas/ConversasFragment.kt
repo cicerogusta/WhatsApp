@@ -114,12 +114,14 @@ class ConversasFragment : BaseFragment<FragmentConversasBinding, ConversasViewMo
                 }
 
             } else {
-                val nome = conversa.grupo.nome.lowercase()
+                val nome = conversa.grupo?.nome?.lowercase()
                 val ultimaMsg = conversa.ultimaMensagem.lowercase()
 
-                if (nome.contains(texto) || ultimaMsg.contains(texto)) {
-                    listaConversasBusca.add(conversa)
+                if (nome != null) {
+                    if (nome.contains(texto) || ultimaMsg.contains(texto)) {
+                        listaConversasBusca.add(conversa)
 
+                    }
                 }
             }
 
