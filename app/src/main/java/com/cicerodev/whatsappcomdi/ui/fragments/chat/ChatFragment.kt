@@ -23,6 +23,7 @@ import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.databinding.FragmentChatBinding
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
 import com.cicerodev.whatsappcomdi.util.codificarBase64
+import com.cicerodev.whatsappcomdi.util.toast
 
 
 class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() {
@@ -40,73 +41,63 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
             if (result.resultCode == Activity.RESULT_OK) {
                 enviarMensagemImagem(result)
             }
+
         }
 
     private fun enviarMensagemImagem(result: ActivityResult) {
-        if (result.data != null) {
-            bitmap = result.data?.extras?.get("data") as Bitmap
+        bitmap = result.data?.extras?.get("data") as Bitmap
+        viewModel.getDownloadUrl(bitmap, idUsuarioRemetente!!).observe(viewLifecycleOwner) {
             if (usuarioDestinatario != null) {
                 val mensagem = Mensagem()
                 mensagem.idUsuario = idUsuarioRemetente
+                mensagem.imagem = it
                 mensagem.mensagem = "imagem.jpeg"
-                viewModel.getDownloadUrl(bitmap, idUsuarioRemetente!!)
-                    .observe(viewLifecycleOwner) { downloadUrl ->
-                        mensagem.imagem = downloadUrl
-                        idUsuarioRemetente?.let {
-                            viewModel.enviaMensagem(
-                                it,
-                                idUsuarioDestinatario,
-                                mensagem
-                            )
-                        }
-                        idUsuarioRemetente?.let {
-                            viewModel.enviaMensagem(
-                                idUsuarioDestinatario,
-                                it,
-                                mensagem
-                            )
-                        }
 
 
-                    }
+                viewModel.enviaMensagem(idUsuarioRemetente!!, idUsuarioDestinatario, mensagem)
+                viewModel.enviaMensagem(idUsuarioDestinatario, idUsuarioRemetente!!, mensagem)
+                viewModel.salvaConversa(
+                    idUsuarioRemetente!!,
+                    idUsuarioDestinatario,
+                    usuarioDestinatario!!,
+                    mensagem,
+                    false,
+                    null
+                )
+                viewModel.salvaConversa(
+                    idUsuarioDestinatario,
+                    idUsuarioRemetente!!,
+                    viewModel.retornaUsuarioLogado(),
+                    mensagem,
+                    false,
+                    null
+                )
+
+
             } else {
-                idUsuarioRemetente?.let {
-                    viewModel.getDownloadUrl(bitmap, it)
-                        .observe(viewLifecycleOwner) { downloadUrl ->
-                            for (membro in args.grupo?.membros!!) {
-                                idRemetenteGrupo = codificarBase64(membro.email)
-                                val idUsuarioLogadoGrupo: String =
-                                    viewModel.retornaIdRemetente().toString()
-                                val mensagem = Mensagem()
-                                mensagem.idUsuario = (idUsuarioLogadoGrupo)
-                                mensagem.mensagem = ("imagem.jpeg")
-                                mensagem.nome = (viewModel.retornaUsuarioLogado().nome)
-                                mensagem.imagem = downloadUrl
+                for (membro in args.grupo?.membros!!) {
+                    idRemetenteGrupo = codificarBase64(membro.email)
+                    val idUsuarioLogadoGrupo: String = viewModel.retornaIdRemetente().toString()
+                    val mensagem = Mensagem()
+                    mensagem.idUsuario = (idUsuarioLogadoGrupo)
+                    mensagem.mensagem = ("imagem.jpeg")
+                    mensagem.nome = (viewModel.retornaUsuarioLogado().nome)
 
-                                //salvar mensagem para o membro
-                                viewModel.enviaMensagem(
-                                    idRemetenteGrupo,
-                                    idUsuarioDestinatario,
-                                    mensagem
-                                )
+                    //salvar mensagem para o membro
+                    viewModel.enviaMensagem(idRemetenteGrupo, idUsuarioDestinatario, mensagem)
 
-                                //Salvar conversa
-                                viewModel.salvaConversa(
-                                    idRemetenteGrupo,
-                                    idUsuarioDestinatario,
-                                    usuarioDestinatario,
-                                    mensagem,
-                                    true, args.grupo
-                                )
-                            }
-                        }
+                    //Salvar conversa
+                    viewModel.salvaConversa(
+                        idRemetenteGrupo,
+                        idUsuarioDestinatario,
+                        usuarioDestinatario,
+                        mensagem,
+                        true, args.grupo
+                    )
                 }
-
-
             }
-
-
         }
+
     }
 
     override fun getViewBinding(
@@ -133,11 +124,8 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
         super.onViewCreated(view, savedInstanceState)
         setupClickListener()
         setupToolbar()
-
-        idUsuarioRemetente = viewModel.retornaIdRemetente()
-
-        viewModel.mensagens.value?.clear()
         observer()
+        idUsuarioRemetente = viewModel.retornaIdRemetente()
         recuperaDadosUsuarioDestinatario()
 
 
@@ -248,6 +236,7 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
     private fun observer() {
         viewModel.mensagens.observe(viewLifecycleOwner) {
+            listaMensagens.clear()
             it.forEach { mensagem ->
                 listaMensagens.add(mensagem)
             }
@@ -269,10 +258,8 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
     override fun onStart() {
         super.onStart()
-        listaMensagens.clear()
-        viewModel.mensagens.value?.clear()
-        configuraRecyclerView()
         viewModel.retornaMensagem(idUsuarioRemetente.toString(), idUsuarioDestinatario)
+        observer()
 
     }
 

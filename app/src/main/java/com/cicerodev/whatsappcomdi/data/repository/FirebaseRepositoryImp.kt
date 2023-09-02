@@ -340,7 +340,6 @@ class FirebaseRepositoryImp(
 
         val childEventListener = object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                listaMensagem.clear()
                 val mensagem = snapshot.getValue(Mensagem::class.java)
                 mensagem?.let {
                     listaMensagem.add(it)
