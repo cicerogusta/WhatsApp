@@ -250,7 +250,7 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
             adapter =
-                MensagensAdapter(listaMensagens, requireContext(), viewModel.retornaIdRemetente()!!)
+                MensagensAdapter(listaMensagens, requireContext(), idUsuarioRemetente!!)
             this.adapter?.notifyDataSetChanged()
 
         }
