@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.cicerodev.whatsappcomdi.R
 import com.cicerodev.whatsappcomdi.adapter.ContatosAdapter
 import com.cicerodev.whatsappcomdi.adapter.GrupoSelecionadoAdapter
 import com.cicerodev.whatsappcomdi.adapter.RecyclerItemClickListener
