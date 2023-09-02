@@ -84,6 +84,7 @@ class ConfiguracoesActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setupClickListener()
         Permissao.validarPermissoes(permissoesNecessarias, this, 1)
         setupToolbar()
         observer()

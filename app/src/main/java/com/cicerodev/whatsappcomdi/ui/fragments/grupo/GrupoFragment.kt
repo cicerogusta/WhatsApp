@@ -2,6 +2,7 @@ package com.cicerodev.whatsappcomdi.ui.fragments.grupo
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -27,9 +28,6 @@ class GrupoFragment : BaseFragment<FragmentGrupoBinding, GrupoViewModel>() {
     ): FragmentGrupoBinding = FragmentGrupoBinding.inflate(inflater, container, false)
 
     override fun setupClickListener() {
-        binding.toolbar.setNavigationOnClickListener {
-            activity?.onBackPressed()
-        }
 
         binding.fabAvancarCadastro.setOnClickListener {
             navigateTo(
@@ -39,6 +37,8 @@ class GrupoFragment : BaseFragment<FragmentGrupoBinding, GrupoViewModel>() {
             )
         }
     }
+
+
 
     private val listaMembrosSelecionados: MutableList<User> = ArrayList()
     private lateinit var grupoSelecionadoAdapter: GrupoSelecionadoAdapter
@@ -56,10 +56,13 @@ class GrupoFragment : BaseFragment<FragmentGrupoBinding, GrupoViewModel>() {
 
     private fun setupToolbar() {
         val toolbar = binding.toolbar
-        val activity = requireActivity() as AppCompatActivity
-        activity.setSupportActionBar(toolbar)
-        activity.supportActionBar?.title = "Novo grupo"
-        activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toolbar.title = "Novo grupo"
+        val appCompatActivity = (activity as AppCompatActivity?)!!
+        appCompatActivity.setSupportActionBar(toolbar)
+        appCompatActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toolbar.setNavigationOnClickListener {
+            navigateTo(GrupoFragmentDirections.actionGrupoFragmentToHomeFragment())
+        }
     }
 
     private fun atualizarMembrosToolbar() {

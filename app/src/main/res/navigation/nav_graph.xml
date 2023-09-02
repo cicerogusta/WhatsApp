@@ -71,6 +71,9 @@
         <action
             android:id="@+id/action_grupoFragment_to_cadastroGrupoFragment2"
             app:destination="@id/cadastroGrupoFragment" />
+        <action
+            android:id="@+id/action_grupoFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/cadastroGrupoFragment"
