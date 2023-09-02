@@ -13,7 +13,7 @@ class GrupoViewModel @Inject constructor(
 ) : ViewModel() {
 
     fun recuperarContatosGrupo(listaMembros: MutableList<User>, adapter: ContatosAdapter) {
-        repository.recuperarContatosGrupo(listaMembros, adapter)
+        repository.getContactsGroup(listaMembros, adapter)
     }
 
 }

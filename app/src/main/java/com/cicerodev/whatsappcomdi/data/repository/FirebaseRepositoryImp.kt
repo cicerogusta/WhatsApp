@@ -25,7 +25,7 @@ class FirebaseRepositoryImp(
     private val database: FirebaseDatabase,
     private val storage: FirebaseStorage
 ) : FirebaseRepository {
-    override fun recuperarContatosGrupo(
+    override fun getContactsGroup(
         listaMembros: MutableList<User>,
         adapter: ContatosAdapter
     ) {

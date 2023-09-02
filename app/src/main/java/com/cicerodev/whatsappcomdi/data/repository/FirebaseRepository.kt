@@ -31,7 +31,7 @@ interface FirebaseRepository {
     )
 
     fun saveGroup(grupo: Grupo)
-    fun recuperarContatosGrupo(
+    fun getContactsGroup(
         listaMembros: MutableList<User>,
         adapter: ContatosAdapter
     )
