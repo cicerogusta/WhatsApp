@@ -12,9 +12,6 @@ import com.cicerodev.whatsappcomdi.R
 import com.cicerodev.whatsappcomdi.data.model.User
 import de.hdodenhof.circleimageview.CircleImageView
 
-/**
- * Created by jamiltondamasceno
- */
 class GrupoSelecionadoAdapter(
     private val contatosSelecionados: MutableList<User>,
     private val context: Context

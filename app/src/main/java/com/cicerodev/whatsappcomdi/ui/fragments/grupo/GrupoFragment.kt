@@ -149,7 +149,6 @@ class GrupoFragment : BaseFragment<FragmentGrupoBinding, GrupoViewModel>() {
     }
 
     private fun configuraRecyclerMembrosSelecioados() {
-        //Configurar recyclerview para os membros selecionados
         grupoSelecionadoAdapter =
             GrupoSelecionadoAdapter(listaMembrosSelecionados, requireContext())
         val layoutManagerHorizontal: RecyclerView.LayoutManager = LinearLayoutManager(
