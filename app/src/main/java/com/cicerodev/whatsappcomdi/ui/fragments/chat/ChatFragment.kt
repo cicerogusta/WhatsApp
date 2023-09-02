@@ -28,7 +28,6 @@ import com.cicerodev.whatsappcomdi.util.toast
 
 class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() {
     private var idRemetenteGrupo: String = ""
-    private lateinit var bitmap: Bitmap
     private var idUsuarioRemetente: String? = null
     private var usuarioDestinatario: User? = null
     override val viewModel: ChatFragmentViewModel by hiltNavGraphViewModels(R.id.nav_graph)
@@ -45,7 +44,7 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
         }
 
     private fun enviarMensagemImagem(result: ActivityResult) {
-        bitmap = result.data?.extras?.get("data") as Bitmap
+        val bitmap = result.data?.extras?.get("data") as Bitmap
         viewModel.getDownloadUrl(bitmap, idUsuarioRemetente!!).observe(viewLifecycleOwner) {
             if (usuarioDestinatario != null) {
                 val mensagem = Mensagem()
