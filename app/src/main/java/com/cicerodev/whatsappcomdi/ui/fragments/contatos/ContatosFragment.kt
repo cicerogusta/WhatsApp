@@ -70,15 +70,16 @@ class ContatosFragment : BaseFragment<FragmentContatosBinding, ContatosViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getAllUsers()
+
         observer()
-        configurarRecyclerView()
+        setupClickListener()
 
     }
 
     private fun observer() {
         viewModel.users.observe(viewLifecycleOwner) {
             listaContatos = it
+            configurarRecyclerView()
         }
     }
 
@@ -88,45 +89,6 @@ class ContatosFragment : BaseFragment<FragmentContatosBinding, ContatosViewModel
             contatosAdapter = ContatosAdapter(listaContatos, requireContext())
             adapter = contatosAdapter
         }
-        binding.recyclerViewListaContatos.addOnItemTouchListener(
-            RecyclerItemClickListener(
-                activity,
-                binding.recyclerViewListaContatos,
-                object : RecyclerItemClickListener.OnItemClickListener {
-                    override fun onItemClick(view: View?, position: Int) {
-                        val cabecalho = listaContatos[position].email.isEmpty()
-                        if (cabecalho) {
-                            navigateTo(HomeFragmentDirections.actionHomeFragmentToGrupoFragment())
-                        } else {
-                            val tipoChat = "chatContato"
-                            navigateTo(
-                                HomeFragmentDirections.actionHomeFragmentToChatFragment(
-                                    listaContatos[position],
-                                    tipoChat,
-                                    null
-                                )
-                            )
-
-                        }
-
-
-                    }
-
-                    override fun onItemClick(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-
-                    }
-
-                    override fun onLongItemClick(view: View?, position: Int) {
-
-                    }
-
-                })
-        )
     }
 
     fun pesquisarContatos(texto: String) {
@@ -151,6 +113,12 @@ class ContatosFragment : BaseFragment<FragmentContatosBinding, ContatosViewModel
         contatosAdapter = ContatosAdapter(listaContatos, requireContext())
         binding.recyclerViewListaContatos.adapter = contatosAdapter
         contatosAdapter.notifyDataSetChanged()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        viewModel.getAllUsers()
     }
 }
 

@@ -28,7 +28,7 @@ class GrupoSelecionadoAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val usuario = contatosSelecionados[position]
         holder.nome.text = usuario.nome
-        if (!usuario.foto.equals("")) {
+        if (!usuario.foto.equals("null")) {
             val uri = Uri.parse(usuario.foto)
             Glide.with(context).load(uri).into(holder.foto)
         } else {

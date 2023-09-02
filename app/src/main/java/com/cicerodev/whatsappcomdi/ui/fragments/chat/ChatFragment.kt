@@ -82,6 +82,7 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
                     mensagem.idUsuario = (idUsuarioLogadoGrupo)
                     mensagem.mensagem = ("imagem.jpeg")
                     mensagem.nome = (viewModel.retornaUsuarioLogado().nome)
+                    mensagem.imagem = it
 
                     //salvar mensagem para o membro
                     viewModel.enviaMensagem(idRemetenteGrupo, idUsuarioDestinatario, mensagem)
