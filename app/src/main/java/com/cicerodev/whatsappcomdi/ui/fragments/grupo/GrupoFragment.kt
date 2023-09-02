@@ -35,6 +35,41 @@ class GrupoFragment : BaseFragment<FragmentGrupoBinding, GrupoViewModel>() {
 
     override fun setupClickListener() {
 
+        binding.content.recyclerMembrosSelecionados.addOnItemTouchListener(
+            RecyclerItemClickListener(
+                requireContext(),
+                binding.content.recyclerMembrosSelecionados,
+                object : RecyclerItemClickListener.OnItemClickListener {
+                    override fun onItemClick(view: View?, position: Int) {
+                        val usuarioSelecionado = listaMembrosSelecionados[position]
+
+                        //Remover da listagem de membros selecionados
+                        listaMembrosSelecionados.remove(usuarioSelecionado)
+                        grupoSelecionadoAdapter!!.notifyDataSetChanged()
+
+                        //Adicionar à listagem de membros
+                        listaMembros.add(usuarioSelecionado)
+                        contatosAdapter!!.notifyDataSetChanged()
+                        atualizarMembrosToolbar()
+                    }
+
+                    override fun onItemClick(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+
+                    }
+
+                    override fun onLongItemClick(view: View?, position: Int) {
+
+                    }
+
+                }
+            )
+        )
+
         binding.fabAvancarCadastro.setOnClickListener {
             navigateTo(
                 GrupoFragmentDirections.actionGrupoFragmentToCadastroGrupoFragment2(
@@ -125,40 +160,7 @@ class GrupoFragment : BaseFragment<FragmentGrupoBinding, GrupoViewModel>() {
         binding.content.recyclerMembrosSelecionados.setLayoutManager(layoutManagerHorizontal)
         binding.content.recyclerMembrosSelecionados.setHasFixedSize(true)
         binding.content.recyclerMembrosSelecionados.setAdapter(grupoSelecionadoAdapter)
-        binding.content.recyclerMembrosSelecionados.addOnItemTouchListener(
-            RecyclerItemClickListener(
-                requireContext(),
-                binding.content.recyclerMembrosSelecionados,
-                object : RecyclerItemClickListener.OnItemClickListener {
-                    override fun onItemClick(view: View?, position: Int) {
-                        val usuarioSelecionado = listaMembrosSelecionados[position]
 
-                        //Remover da listagem de membros selecionados
-                        listaMembrosSelecionados.remove(usuarioSelecionado)
-                        grupoSelecionadoAdapter!!.notifyDataSetChanged()
-
-                        //Adicionar à listagem de membros
-                        listaMembros.add(usuarioSelecionado)
-                        contatosAdapter!!.notifyDataSetChanged()
-                        atualizarMembrosToolbar()
-                    }
-
-                    override fun onItemClick(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-
-                    }
-
-                    override fun onLongItemClick(view: View?, position: Int) {
-
-                    }
-
-                }
-            )
-        )
     }
 
     private fun recuperarContatosGrupo() {
