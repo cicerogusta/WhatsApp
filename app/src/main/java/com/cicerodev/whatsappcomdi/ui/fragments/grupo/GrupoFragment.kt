@@ -21,6 +21,13 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class GrupoFragment : BaseFragment<FragmentGrupoBinding, GrupoViewModel>() {
+
+    private val listaMembrosSelecionados: MutableList<User> = ArrayList()
+    private lateinit var grupoSelecionadoAdapter: GrupoSelecionadoAdapter
+    private lateinit var contatosAdapter: ContatosAdapter
+    private val listaMembros: MutableList<User> = ArrayList()
+    override val viewModel: GrupoViewModel by viewModels()
+
     override fun getViewBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
@@ -36,14 +43,6 @@ class GrupoFragment : BaseFragment<FragmentGrupoBinding, GrupoViewModel>() {
             )
         }
     }
-
-
-
-    private val listaMembrosSelecionados: MutableList<User> = ArrayList()
-    private lateinit var grupoSelecionadoAdapter: GrupoSelecionadoAdapter
-    private lateinit var contatosAdapter: ContatosAdapter
-    private val listaMembros: MutableList<User> = ArrayList()
-    override val viewModel: GrupoViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
