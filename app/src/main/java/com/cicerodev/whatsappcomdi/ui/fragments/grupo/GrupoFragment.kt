@@ -15,8 +15,8 @@ import com.cicerodev.whatsappcomdi.adapter.RecyclerItemClickListener
 import com.cicerodev.whatsappcomdi.data.model.MutableListType
 import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.databinding.FragmentGrupoBinding
-import com.cicerodev.whatsappcomdi.extensions.navigateTo
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
+import com.cicerodev.whatsappcomdi.util.navigateTo
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -11,10 +11,10 @@ import androidx.viewpager2.widget.ViewPager2
 import com.cicerodev.whatsappcomdi.R
 import com.cicerodev.whatsappcomdi.adapter.TabViewPagerAdapter
 import com.cicerodev.whatsappcomdi.databinding.FragmentHomeBinding
-import com.cicerodev.whatsappcomdi.extensions.navigateTo
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
 import com.cicerodev.whatsappcomdi.ui.fragments.contatos.ContatosFragment
 import com.cicerodev.whatsappcomdi.ui.fragments.conversas.ConversasFragment
+import com.cicerodev.whatsappcomdi.util.navigateTo
 import com.google.android.material.tabs.TabLayoutMediator
 
 

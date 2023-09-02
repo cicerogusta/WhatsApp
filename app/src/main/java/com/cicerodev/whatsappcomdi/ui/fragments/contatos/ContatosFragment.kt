@@ -12,9 +12,9 @@ import com.cicerodev.whatsappcomdi.adapter.ContatosAdapter
 import com.cicerodev.whatsappcomdi.adapter.RecyclerItemClickListener
 import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.databinding.FragmentContatosBinding
-import com.cicerodev.whatsappcomdi.extensions.navigateTo
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
 import com.cicerodev.whatsappcomdi.ui.fragments.home.HomeFragmentDirections
+import com.cicerodev.whatsappcomdi.util.navigateTo
 
 class ContatosFragment : BaseFragment<FragmentContatosBinding, ContatosViewModel>() {
     private lateinit var listaContatos: MutableList<User>

@@ -12,9 +12,9 @@ import com.cicerodev.whatsappcomdi.adapter.ConversasAdapter
 import com.cicerodev.whatsappcomdi.adapter.RecyclerItemClickListener
 import com.cicerodev.whatsappcomdi.data.model.Conversa
 import com.cicerodev.whatsappcomdi.databinding.FragmentConversasBinding
-import com.cicerodev.whatsappcomdi.extensions.navigateTo
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
 import com.cicerodev.whatsappcomdi.ui.fragments.home.HomeFragmentDirections
+import com.cicerodev.whatsappcomdi.util.navigateTo
 import dagger.hilt.android.AndroidEntryPoint
 
 
