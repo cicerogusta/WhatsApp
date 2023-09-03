@@ -110,7 +110,7 @@ class FirebaseRepositoryImp(
 
     }
 
-    fun atualizarNomeUsuario(nome: String?): Boolean {
+    private fun atualizarNomeUsuario(nome: String?): Boolean {
         return try {
             val user = auth.currentUser
             val profile = UserProfileChangeRequest.Builder()
