@@ -18,12 +18,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.cicerodev.whatsappcomdi.R
 import com.cicerodev.whatsappcomdi.adapter.MensagensAdapter
-import com.cicerodev.whatsappcomdi.data.model.Conversa
 import com.cicerodev.whatsappcomdi.data.model.Mensagem
 import com.cicerodev.whatsappcomdi.data.model.User
 import com.cicerodev.whatsappcomdi.databinding.FragmentChatBinding
 import com.cicerodev.whatsappcomdi.ui.base.BaseFragment
 import com.cicerodev.whatsappcomdi.util.codificarBase64
+import com.cicerodev.whatsappcomdi.util.toast
 
 
 class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() {
@@ -34,6 +34,7 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
     private val args: ChatFragmentArgs by navArgs()
     private var listaMensagens = mutableListOf<Mensagem>()
     private lateinit var idUsuarioDestinatario: String
+
     private val camera =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -41,22 +42,6 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
             }
 
         }
-
-    override fun getViewBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentChatBinding = FragmentChatBinding.inflate(layoutInflater)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupClickListener()
-        setupToolbar()
-        observer()
-        idUsuarioRemetente = viewModel.retornaIdRemetente()
-        recuperaDadosUsuarioDestinatario()
-
-
-    }
 
     private fun enviarMensagemImagem(result: ActivityResult) {
         val bitmap = result.data?.extras?.get("data") as Bitmap
@@ -67,20 +52,24 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
                 mensagem.imagem = it
                 mensagem.mensagem = "imagem.jpeg"
 
-                val conversaRemetente = Conversa(
-                    idUsuarioRemetente!!,
-                    idUsuarioDestinatario,
-                    mensagem.mensagem.toString(),
-                    usuarioDestinatario,
-                    "false", null
-                )
+
                 viewModel.enviaMensagem(idUsuarioRemetente!!, idUsuarioDestinatario, mensagem)
                 viewModel.enviaMensagem(idUsuarioDestinatario, idUsuarioRemetente!!, mensagem)
                 viewModel.salvaConversa(
-                    conversaRemetente
+                    idUsuarioRemetente!!,
+                    idUsuarioDestinatario,
+                    usuarioDestinatario!!,
+                    mensagem,
+                    false,
+                    null
                 )
                 viewModel.salvaConversa(
-                    conversaRemetente
+                    idUsuarioDestinatario,
+                    idUsuarioRemetente!!,
+                    viewModel.retornaUsuarioLogado(),
+                    mensagem,
+                    false,
+                    null
                 )
 
 
@@ -96,22 +85,25 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
                     //salvar mensagem para o membro
                     viewModel.enviaMensagem(idRemetenteGrupo, idUsuarioDestinatario, mensagem)
-                    val conversaRemetente = Conversa(
-                        idUsuarioRemetente!!,
-                        idUsuarioDestinatario,
-                        mensagem.mensagem.toString(),
-                        usuarioDestinatario,
-                        "true", args.grupo
-                    )
+
                     //Salvar conversa
                     viewModel.salvaConversa(
-                        conversaRemetente
+                        idRemetenteGrupo,
+                        idUsuarioDestinatario,
+                        usuarioDestinatario,
+                        mensagem,
+                        true, args.grupo
                     )
                 }
             }
         }
 
     }
+
+    override fun getViewBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentChatBinding = FragmentChatBinding.inflate(layoutInflater)
 
     override fun setupClickListener() {
         binding.content.fabEnviar.setOnClickListener {
@@ -126,6 +118,17 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
 
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupClickListener()
+        setupToolbar()
+        observer()
+        idUsuarioRemetente = viewModel.retornaIdRemetente()
+        recuperaDadosUsuarioDestinatario()
+
+
     }
 
     private fun setupToolbar() {
@@ -149,18 +152,21 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
 
                 viewModel.enviaMensagem(idUsuarioRemetente!!, idUsuarioDestinatario, mensagem)
                 viewModel.enviaMensagem(idUsuarioDestinatario, idUsuarioRemetente!!, mensagem)
-                val conversaRemetente = Conversa(
+                viewModel.salvaConversa(
                     idUsuarioRemetente!!,
                     idUsuarioDestinatario,
-                    mensagem.mensagem.toString(),
-                    usuarioDestinatario,
-                    "false", null
+                    usuarioDestinatario!!,
+                    mensagem,
+                    false,
+                    null
                 )
                 viewModel.salvaConversa(
-                    conversaRemetente
-                )
-                viewModel.salvaConversa(
-                    conversaRemetente
+                    idUsuarioDestinatario,
+                    idUsuarioRemetente!!,
+                    viewModel.retornaUsuarioLogado(),
+                    mensagem,
+                    false,
+                    null
                 )
 
 
@@ -177,16 +183,13 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
                     //salvar mensagem para o membro
                     viewModel.enviaMensagem(idRemetenteGrupo, idUsuarioDestinatario, mensagem)
 
-                    val conversaRemetente = Conversa(
-                        idUsuarioRemetente!!,
-                        idUsuarioDestinatario,
-                        mensagem.mensagem.toString(),
-                        usuarioDestinatario,
-                        "true", args.grupo
-                    )
                     //Salvar conversa
                     viewModel.salvaConversa(
-                        conversaRemetente
+                        idRemetenteGrupo,
+                        idUsuarioDestinatario,
+                        usuarioDestinatario,
+                        mensagem,
+                        true, args.grupo
                     )
                 }
             }
@@ -247,7 +250,7 @@ class ChatFragment : BaseFragment<FragmentChatBinding, ChatFragmentViewModel>() 
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
             adapter =
-                MensagensAdapter(listaMensagens, requireContext(), idUsuarioRemetente!!)
+                MensagensAdapter(listaMensagens, requireContext(), viewModel.retornaIdRemetente()!!)
             this.adapter?.notifyDataSetChanged()
 
         }

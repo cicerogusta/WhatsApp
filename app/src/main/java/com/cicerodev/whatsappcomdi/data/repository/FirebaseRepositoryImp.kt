@@ -175,18 +175,23 @@ class FirebaseRepositoryImp(
     }
 
     override fun saveConversa(
-        conversa: Conversa
+        idRemetente: String,
+        idDestinatario: String,
+        usuarioExibicao: User?,
+        mensagem: Mensagem,
+        isGroup: Boolean,
+        grupo: Grupo?
     ) {
         val conversaRemetente = Conversa()
-        conversaRemetente.idRemetente = conversa.idRemetente
-        conversaRemetente.idDestinatario = conversa.idDestinatario
-        conversaRemetente.ultimaMensagem = conversa.ultimaMensagem
+        conversaRemetente.idRemetente = idRemetente
+        conversaRemetente.idDestinatario = idDestinatario
+        conversaRemetente.ultimaMensagem = mensagem.mensagem.toString()
 
-        if (conversa.isGroup == "true") {
+        if (isGroup) {
             conversaRemetente.isGroup = "true"
-            conversaRemetente.grupo = conversa.grupo!!
+            conversaRemetente.grupo = grupo!!
         } else {
-            conversaRemetente.usuarioExibicao = conversa.usuarioExibicao
+            conversaRemetente.usuarioExibicao = usuarioExibicao
             conversaRemetente.isGroup = "false"
         }
 
